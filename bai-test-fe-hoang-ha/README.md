@@ -13,7 +13,7 @@ npm run build    # bản production trong dist/
 npm run preview
 ```
 
-Mỗi lần push lên nhánh `main`, GitHub Actions (`.github/workflows/deploy.yml`) sẽ tự build và deploy lên GitHub Pages.
+Mỗi lần push lên nhánh `main` có thay đổi trong thư mục này, GitHub Actions ([`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) ở gốc repo) sẽ tự build và deploy lên GitHub Pages.
 
 ## Luồng UX
 

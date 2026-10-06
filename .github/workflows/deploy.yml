@@ -1,8 +1,11 @@
-name: Deploy to GitHub Pages
+name: Deploy FE to GitHub Pages
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'bai-test-fe-hoang-ha/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,6 +17,10 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+defaults:
+  run:
+    working-directory: bai-test-fe-hoang-ha
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,11 +30,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: bai-test-fe-hoang-ha/package-lock.json
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: bai-test-fe-hoang-ha/dist
 
   deploy:
     needs: build
