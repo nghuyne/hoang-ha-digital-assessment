@@ -41,6 +41,8 @@ flashsale:
   lease-seconds: 60
   # Giữ suất thành công thì có N giây để thanh toán; quá hạn thì đơn EXPIRED, suất về người kế tiếp trong hàng
   payment-window-seconds: 600
+  # Đơn vào DB trễ (worker/DB chậm) vẫn còn ít nhất min(N, hạn thanh toán) để thanh toán, không bị hết hạn ngay
+  min-payment-seconds: 120
   admission-tick-ms: 100      # nhịp cấp lượt (đường ghi của phòng chờ)
   expiry-sweep-ms: 1000       # nhịp quét đơn quá hạn thanh toán
   token-ttl-seconds: 120
@@ -50,5 +52,6 @@ flashsale:
   worker-name: ${HOSTNAME:${COMPUTERNAME:worker-1}}   # cố định qua các lần khởi động để nhận lại message dở dang
   worker-reclaim-idle-ms: 30000   # message chưa ACK quá lâu (worker khác đã chết) thì nhận về xử lý
   worker-max-deliveries: 5        # quá số lần thử thì chuyển dead-letter, không chặn hàng đợi
-  hmac-secret: demo-secret-change-me-in-production-0123456789
-  admin-key: demo-admin-key
+  # Secret lấy từ biến môi trường; giá trị mặc định chỉ để chạy demo trên máy (app sẽ cảnh báo khi khởi động)
+  hmac-secret: ${FLASHSALE_HMAC_SECRET:demo-secret-change-me-in-production-0123456789}
+  admin-key: ${FLASHSALE_ADMIN_KEY:demo-admin-key}

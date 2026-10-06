@@ -88,7 +88,10 @@ public class WaitingRoomService {
         long now = (Long) r.get(3);
         long startAt = (Long) r.get(4);
         return switch (state) {
-            case ADMITTED -> new Status(state, 0L, tokens.issue(userId, now, leaseExpiresAt), leaseExpiresAt, now, 0, null);
+            // Token gắn với lượt (cấp lúc nào, hết hạn lúc nào), không với lần hỏi: hỏi lại nhận đúng token cũ,
+            // nên jti dùng một lần có hiệu lực thật, và thời gian phản ứng tính từ lúc được mời
+            case ADMITTED -> new Status(state, 0L, tokens.issue(userId, (Long) r.get(5), leaseExpiresAt),
+                    leaseExpiresAt, now, 0, null);
             case WAITING -> new Status(state, ahead, null, null, now, pollAfterWaiting(ahead), (Long) r.get(5));
             case WAITING_FOR_START -> new Status(state, null, null, null, now, pollAfterStart(startAt - now), null);
             // Hết suất tạm thời: đơn chưa thanh toán có thể hết hạn và suất quay lại hàng chờ

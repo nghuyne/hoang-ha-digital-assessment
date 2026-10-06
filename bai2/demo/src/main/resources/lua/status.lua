@@ -6,7 +6,7 @@
 -- KEYS[1] = fs:{ev}:queue, KEYS[2] = fs:{ev}:leases, KEYS[3] = fs:{ev}:stock,
 -- KEYS[4] = fs:{ev}:buyers, KEYS[5] = fs:{ev}:cursor, KEYS[6] = fs:{ev}:meta
 -- ARGV[1] = userId
--- Trả về {state, ahead, leaseExpiresAt, now, startAt, rank}
+-- Trả về {state, ahead, leaseExpiresAt, now, startAt, rank}; với ADMITTED, phần tử cuối là lúc lượt được cấp
 
 local t = redis.call('TIME')
 local now = tonumber(t[1]) * 1000 + math.floor(tonumber(t[2]) / 1000)
@@ -18,7 +18,11 @@ if not rank then return {'NOT_IN_QUEUE', 0, 0, now, startAt} end
 if now < startAt then return {'WAITING_FOR_START', 0, 0, now, startAt} end
 
 local lease = tonumber(redis.call('ZSCORE', KEYS[2], ARGV[1]) or '0')
-if lease > now then return {'ADMITTED', 0, lease, now, startAt} end
+if lease > now then
+  -- Lúc lượt được cấp = hạn lượt - leaseMs: cố định suốt lượt, nên token cấp lại vẫn y hệt
+  local grantedAt = lease - tonumber(redis.call('HGET', KEYS[6], 'leaseMs'))
+  return {'ADMITTED', 0, lease, now, startAt, grantedAt}
+end
 if tonumber(redis.call('GET', KEYS[3]) or '0') <= 0 then return {'SOLD_OUT', 0, 0, now, startAt} end
 local cursor = tonumber(redis.call('GET', KEYS[5]) or '0')
 if rank < cursor then return {'MISSED', 0, 0, now, startAt} end   -- đã được mời nhưng để quá hạn

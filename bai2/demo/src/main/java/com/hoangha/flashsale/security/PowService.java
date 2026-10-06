@@ -11,8 +11,8 @@ import com.hoangha.flashsale.config.Keys;
 
 /**
  * Proof-of-Work: client phải tìm nonce sao cho SHA-256(challenge + ":" + nonce) có đủ số bit 0 ở đầu.
- * Người thật chỉ tốn ~1 giây CPU một lần; kẻ chạy 10.000 tài khoản phải trả 10.000 lần.
- * PoW không phân biệt người/bot, nó chỉ làm mỗi danh tính tốn chi phí.
+ * 16 bit ≈ 65.000 phép băm: khoảng 1 giây với WebCrypto trên trình duyệt, nhưng code native chỉ mất vài ms.
+ * PoW không phân biệt người/bot và chỉ là lớp làm chậm; chi phí thật của mỗi danh tính là SĐT và tuổi tài khoản.
  */
 @Service
 public class PowService {

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -93,7 +94,6 @@ class FlashSaleIntegrationTest {
     @BeforeEach
     void resetEvent() {
         events.reset(-1, Fairness.RANDOM, 100, 4, 60);   // đã mở bán, 100 sản phẩm, lượt mua 60s
-        purchases.resetLocalState();
     }
 
     // ---- Câu 1: không bao giờ bán vượt ----------------------------------------------------------
@@ -106,8 +106,10 @@ class FlashSaleIntegrationTest {
         Map<Outcome, AtomicInteger> counts = runConcurrentBuyers(users, 2);   // mỗi người bấm 2 lần
 
         assertThat(counts.get(Outcome.RESERVED).get()).isEqualTo(100);
+        // Lần bấm thứ hai dùng lại cùng token của lượt: ALREADY_RESERVED nếu lần đầu đã mua,
+        // TOKEN_REUSED nếu lần đầu gặp SOLD_OUT (token đã bị dùng). Không có kết quả nào khác.
         assertThat(counts.get(Outcome.SOLD_OUT).get() + counts.get(Outcome.ALREADY_RESERVED).get()
-                + counts.get(Outcome.RESERVED).get()).isEqualTo(users * 2);
+                + counts.get(Outcome.TOKEN_REUSED).get() + counts.get(Outcome.RESERVED).get()).isEqualTo(users * 2);
 
         Map<String, Object> stats = awaitDbProcessed(100);
         assertThat(stats.get("sold")).isEqualTo(100);
@@ -164,8 +166,44 @@ class FlashSaleIntegrationTest {
         redis.opsForValue().set(keys.stock(), "0");
         String token = token("bob", events.redisNowMs() - 1_000);
         assertThat(purchases.buy("bob", token, HUMAN).outcome()).isEqualTo(Outcome.SOLD_OUT);
-        purchases.resetLocalState();
         assertThat(purchases.buy("bob", token, HUMAN).outcome()).isEqualTo(Outcome.TOKEN_REUSED);
+    }
+
+    @Test
+    void admittedUserGetsOneTokenPerTurnNoMatterHowOftenTheyAsk() throws Exception {
+        events.reset(-1, Fairness.FIFO, 1, 4, 60);
+        waitingRoom.join("frank");
+        waitingRoom.admit();
+
+        WaitingRoomService.Status first = waitingRoom.status("frank");
+        Thread.sleep(5);
+        WaitingRoomService.Status second = waitingRoom.status("frank");
+        assertThat(first.state()).isEqualTo(State.ADMITTED);
+        assertThat(second.token()).isEqualTo(first.token());              // hỏi lại không sinh token mới
+        // Thời gian phản ứng tính từ lúc được mời, không từ lần hỏi trạng thái gần nhất
+        assertThat(tokens.parse(first.token()).issuedAt()).isEqualTo(first.leaseExpiresAt() - 60_000);
+
+        Thread.sleep(400);                                                // qua min-reaction-ms
+        redis.opsForValue().set(keys.stock(), "0");
+        assertThat(purchases.buy("frank", first.token(), HUMAN).outcome()).isEqualTo(Outcome.SOLD_OUT);
+        String afterUse = waitingRoom.status("frank").token();
+        assertThat(purchases.buy("frank", afterUse, HUMAN).outcome()).isEqualTo(Outcome.TOKEN_REUSED);
+    }
+
+    @Test
+    void orderPersistedLateStillLeavesTimeToPay() throws Exception {
+        events.reset(-1, Fairness.FIFO, 100, 4, 60, 2);                 // hạn thanh toán 2 giây
+        long payByLongAgo = events.redisNowMs() - 600_000;               // DB sập 10 phút, worker ghi trễ
+        assertThat(orders.persist(UUID.randomUUID(), "late", "iphone-drop", payByLongAgo, 2_000))
+                .isEqualTo(OrderStore.PersistResult.CREATED);
+
+        assertThat(expiryJob.expireDue()).isZero();                       // không bị hủy ngay khi vừa vào DB
+        assertThat(orders.pay("iphone-drop", "late")).isEqualTo(PayResult.PAID);
+
+        assertThat(orders.persist(UUID.randomUUID(), "late-2", "iphone-drop", payByLongAgo, 2_000))
+                .isEqualTo(OrderStore.PersistResult.CREATED);
+        Thread.sleep(2_200);
+        assertThat(expiryJob.expireDue()).isEqualTo(1);                   // vẫn hết hạn sau thời gian tối thiểu
     }
 
     @Test

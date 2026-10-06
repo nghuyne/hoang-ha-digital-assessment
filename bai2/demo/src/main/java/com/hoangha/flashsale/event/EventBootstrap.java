@@ -24,6 +24,9 @@ class EventBootstrap {
 
     @EventListener(ApplicationReadyEvent.class)
     void init() {
+        if (props.hmacSecret().startsWith("demo-") || props.adminKey().startsWith("demo-")) {
+            log.warn("Using demo secrets: set FLASHSALE_HMAC_SECRET and FLASHSALE_ADMIN_KEY outside local demo");
+        }
         EventService.EventState state;
         try {
             state = events.state();

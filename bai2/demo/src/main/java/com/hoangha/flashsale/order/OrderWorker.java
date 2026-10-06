@@ -155,9 +155,11 @@ public class OrderWorker implements SmartLifecycle {
 
     private void handle(MapRecord<String, Object, Object> rec) {
         Map<Object, Object> v = rec.getValue();
+        Object paymentMs = v.get("paymentMs");   // message từ phiên bản cũ có thể không có trường này
         OrderStore.PersistResult r = store.persist(
                 UUID.fromString((String) v.get("orderId")), (String) v.get("userId"), (String) v.get("eventId"),
-                Long.parseLong((String) v.get("payBy")));
+                Long.parseLong((String) v.get("payBy")),
+                paymentMs == null ? Long.MAX_VALUE : Long.parseLong((String) paymentMs));
         meters.counter("flashsale.orders.persisted", "result", r.name()).increment();
         if (r == OrderStore.PersistResult.REJECTED_NO_STOCK) {
             // Redis đã cho qua nhưng DB hết hàng: Redis bị lệch, cần đối soát

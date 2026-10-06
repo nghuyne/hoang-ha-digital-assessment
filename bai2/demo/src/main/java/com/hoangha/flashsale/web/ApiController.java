@@ -181,7 +181,6 @@ public class ApiController {
                 req.powBits() == null ? props.powDifficultyBits() : req.powBits(),
                 req.leaseSeconds() == null ? props.leaseSeconds() : req.leaseSeconds(),
                 req.paymentSeconds() == null ? props.paymentWindowSeconds() : req.paymentSeconds());
-        purchases.resetLocalState();
         return event();
     }
 

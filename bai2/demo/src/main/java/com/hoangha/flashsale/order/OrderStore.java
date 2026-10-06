@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.hoangha.flashsale.config.FlashSaleProperties;
+
 /**
  * Chốt chặn cuối ở DB. Kể cả khi Redis sai (mất dữ liệu khi failover, lỗi vận hành), DB vẫn không
  * bán vượt nhờ UPDATE có điều kiện + CHECK (sold <= total) + UNIQUE (event_id, user_id).
@@ -24,20 +26,30 @@ public class OrderStore {
 
     private final JdbcTemplate jdbc;
     private final TransactionTemplate tx;
+    private final int minPaymentSeconds;
 
-    public OrderStore(JdbcTemplate jdbc, TransactionTemplate tx) {
+    public OrderStore(JdbcTemplate jdbc, TransactionTemplate tx, FlashSaleProperties props) {
         this.jdbc = jdbc;
         this.tx = tx;
+        this.minPaymentSeconds = props.minPaymentSeconds();
     }
 
-    public PersistResult persist(UUID orderId, String userId, String eventId, long payByMs) {
+    /**
+     * @param payByMs     hạn thanh toán Redis đã báo cho khách lúc giữ suất
+     * @param paymentMs   thời hạn thanh toán của sự kiện; thời gian tối thiểu còn lại không vượt quá nó
+     */
+    public PersistResult persist(UUID orderId, String userId, String eventId, long payByMs, long paymentMs) {
         Timestamp payBy = new Timestamp(payByMs);
+        double minRemainingSeconds = Math.min(minPaymentSeconds, paymentMs / 1000.0);
         PersistResult r = tx.execute(status -> {
-            // ON CONFLICT: worker xử lý lại cùng một message (sau khi sập) không tạo đơn thứ hai
+            // ON CONFLICT: worker xử lý lại cùng một message (sau khi sập) không tạo đơn thứ hai.
+            // GREATEST: nếu worker ghi trễ (DB chậm/sập lâu hơn hạn thanh toán), khách vẫn còn tối thiểu
+            // min(min-payment-seconds, hạn thanh toán) kể từ lúc đơn vào DB, thay vì bị job hết hạn hủy ngay.
             int inserted = jdbc.update("""
-                    INSERT INTO orders (id, event_id, user_id, status, expires_at) VALUES (?, ?, ?, 'RESERVED', ?)
+                    INSERT INTO orders (id, event_id, user_id, status, expires_at)
+                    VALUES (?, ?, ?, 'RESERVED', GREATEST(?, now() + make_interval(secs => ?)))
                     ON CONFLICT DO NOTHING
-                    """, orderId, eventId, userId, payBy);
+                    """, orderId, eventId, userId, payBy, minRemainingSeconds);
             if (inserted == 0) return PersistResult.DUPLICATE;
 
             // Trừ kho có điều kiện: một câu lệnh, nguyên tử ở mức hàng, không đọc-rồi-ghi

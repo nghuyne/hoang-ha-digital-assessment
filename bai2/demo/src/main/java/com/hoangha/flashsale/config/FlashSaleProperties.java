@@ -11,6 +11,7 @@ public record FlashSaleProperties(
         int preQueueWindowSeconds,
         int leaseSeconds,
         int paymentWindowSeconds,
+        int minPaymentSeconds,
         int tokenTtlSeconds,
         long minReactionMs,
         int powDifficultyBits,

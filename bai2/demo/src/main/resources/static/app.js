@@ -188,13 +188,14 @@ async function buy(e) {
   const msg = {
     SOLD_OUT: 'Rất tiếc, vừa hết hàng.',
     TOO_FAST: 'Thao tác quá nhanh, thử lại.',
-    CHALLENGE_REQUIRED: 'Cần xác minh thêm (thực tế sẽ hiện CAPTCHA).',
+    CHALLENGE_REQUIRED: 'Cần xác minh thêm. Bản demo chưa tích hợp CAPTCHA: hãy bấm lại bằng chuột hoặc chạm, lượt của bạn vẫn được giữ.',
     TOKEN_EXPIRED: 'Hết thời gian giữ lượt.',
     NOT_ADMITTED: 'Lượt mua của bạn đã hết hạn.',
     RATE_LIMITED: 'Bạn thao tác quá nhanh, thử lại sau giây lát.',
   }[r] || ('Lỗi: ' + (r || res.status));
   setStatus(msg, 'bad');
-  if (r === 'TOO_FAST' || r === 'RATE_LIMITED') $('buyBtn').disabled = false;
+  // Các lỗi này kiểm tra trước khi dùng token: lượt vẫn còn, cho bấm lại
+  if (r === 'TOO_FAST' || r === 'RATE_LIMITED' || r === 'CHALLENGE_REQUIRED') $('buyBtn').disabled = false;
 }
 
 async function showOrder() {

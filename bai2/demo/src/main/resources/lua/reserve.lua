@@ -32,10 +32,12 @@ if stock <= 0 then
 end
 
 -- Hạn thanh toán tính từ lúc khách được báo "giữ suất thành công", không từ lúc worker ghi DB
-local payBy = now + tonumber(redis.call('HGET', KEYS[6], 'paymentMs'))
+local paymentMs = tonumber(redis.call('HGET', KEYS[6], 'paymentMs'))
+local payBy = now + paymentMs
 redis.call('DECR', KEYS[1])
 redis.call('HSET', KEYS[2], ARGV[1], ARGV[2])
 redis.call('ZREM', KEYS[5], ARGV[1])                -- lượt đã dùng: stock -1 và lease -1, số suất trống giữ nguyên
 -- Ghi stream trong cùng script: không có khe hở "đã trừ kho nhưng mất đơn" như khi ghi Redis rồi mới gửi Kafka
-redis.call('XADD', KEYS[4], '*', 'orderId', ARGV[2], 'userId', ARGV[1], 'eventId', ARGV[4], 'payBy', payBy)
+redis.call('XADD', KEYS[4], '*', 'orderId', ARGV[2], 'userId', ARGV[1], 'eventId', ARGV[4], 'payBy', payBy,
+  'paymentMs', paymentMs)
 return {1, 'RESERVED', ARGV[2], payBy}

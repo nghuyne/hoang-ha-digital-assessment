@@ -48,13 +48,6 @@ public class PurchaseService {
         Result(Outcome outcome) { this(outcome, null, null); }
     }
 
-    /** Sau khi Redis báo hết hàng, instance này tự trả lời "hết" trong khoảng này mà không gọi Redis. */
-    private static final long SOLD_OUT_CACHE_MS = 1_000;
-
-    // Cache có hạn thay vì cờ vĩnh viễn: đơn quá hạn thanh toán trả suất lại, nên "hết" có thể hết hiệu lực.
-    // Mỗi instance tự hết hạn cache, không cần đồng bộ qua pub/sub; sai lệch tối đa 1 giây.
-    private volatile long soldOutUntil;
-
     private final StringRedisTemplate redis;
     private final RedisScript<List> reserveScript;
     private final Keys keys;
@@ -89,36 +82,34 @@ public class PurchaseService {
     }
 
     private Result decide(String userId, String rawToken, Signals signals) {
-        // 1. Hết hàng thì trả lời ngay trong bộ nhớ: phần lớn request còn lại không tốn I/O
-        if (System.currentTimeMillis() < soldOutUntil) return new Result(Outcome.SOLD_OUT);
+        // Không cần cache "hết hàng" ở đây: chỉ người có lượt mới tới bước này, và số lượt đang mở
+        // không vượt tồn kho, nên đám đông đã dừng ở phòng chờ chứ không dội vào đường mua.
 
-        // 2. Token phòng chờ: không đi qua phòng chờ thì không mua được
+        // 1. Token phòng chờ: không đi qua phòng chờ thì không mua được
         PurchaseToken t = tokens.parse(rawToken);
         if (t == null || !props.eventId().equals(t.eventId())) return new Result(Outcome.INVALID_TOKEN);
         if (!t.userId().equals(userId)) return new Result(Outcome.WRONG_USER);
         long now = events.redisNowMs();
         if (now > t.expiresAt()) return new Result(Outcome.TOKEN_EXPIRED);
 
-        // 3. Thời gian phản ứng do SERVER đo (token cấp lúc nào, request mua đến lúc nào).
+        // 2. Thời gian phản ứng do SERVER đo (lượt cấp lúc nào, request mua đến lúc nào).
         //    Người thật cần vài trăm ms để thấy nút và bấm; nhanh hơn thế là script.
         if (now - t.issuedAt() < props.minReactionMs()) return new Result(Outcome.TOO_FAST);
 
-        // 4. Tín hiệu trình duyệt: điểm cao thì đòi thử thách (thực tế: CAPTCHA), không chặn cứng
+        // 3. Tín hiệu trình duyệt: điểm cao thì đòi thử thách (thực tế: CAPTCHA), không chặn cứng.
+        //    Kiểm tra này chạy trước reserve.lua nên token chưa bị dùng: qua thử thách thì bấm lại được.
         if (risk.score(signals) >= RiskService.CHALLENGE_THRESHOLD) {
             return new Result(Outcome.CHALLENGE_REQUIRED);
         }
 
-        // 5. Trừ kho nguyên tử trong Redis (xem lua/reserve.lua)
+        // 4. Trừ kho nguyên tử trong Redis (xem lua/reserve.lua)
+        //    Khóa jti phải sống ít nhất tới khi token hết hạn, kể cả khi lượt dài hơn token-ttl-seconds
         String orderId = UUID.randomUUID().toString();
+        long jtiTtlSeconds = Math.max(props.tokenTtlSeconds(), (t.expiresAt() - now) / 1000 + 1);
         List<?> r = reserveTimer.record(() -> redis.execute(reserveScript,
                 List.of(keys.stock(), keys.buyers(), keys.jti(t.jti()), keys.orders(), keys.leases(), keys.meta()),
-                userId, orderId, Integer.toString(props.tokenTtlSeconds()), props.eventId()));
+                userId, orderId, Long.toString(jtiTtlSeconds), props.eventId()));
         Outcome outcome = Outcome.valueOf((String) r.get(1));
-        if (outcome == Outcome.SOLD_OUT) soldOutUntil = System.currentTimeMillis() + SOLD_OUT_CACHE_MS;
         return new Result(outcome, r.size() > 2 ? (String) r.get(2) : null, r.size() > 3 ? (Long) r.get(3) : null);
-    }
-
-    public void resetLocalState() {
-        soldOutUntil = 0;
     }
 }
