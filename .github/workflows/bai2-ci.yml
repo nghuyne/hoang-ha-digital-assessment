@@ -1,0 +1,41 @@
+name: Bai2 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bai2/demo/**'
+      - '.github/workflows/bai2-ci.yml'
+  pull_request:
+    paths:
+      - 'bai2/demo/**'
+      - '.github/workflows/bai2-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: bai2/demo
+
+jobs:
+  test:
+    name: Integration tests (Redis + PostgreSQL via Testcontainers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+          cache-dependency-path: bai2/demo/pom.xml
+      - run: ./mvnw -B -ntp verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: bai2/demo/target/surefire-reports
