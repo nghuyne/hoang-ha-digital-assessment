@@ -67,6 +67,8 @@ node tools/bench-status.mjs --users 20000 --seconds 10
 | `databaseStillCapsAt100WhenRedisStockIsWrong` | Redis bị lệch thành 130: DB vẫn chỉ bán 100, từ chối 30 |
 | `purchaseGatesRejectBotsAndBypasses` | Không token / token giả / token người khác / quá nhanh / headless / hết hạn / không có lượt; bấm lại thì nhận đúng đơn cũ |
 | `purchaseTokenIsSingleUse` | Token mua dùng một lần |
+| `admittedUserGetsOneTokenPerTurnNoMatterHowOftenTheyAsk` | Hỏi trạng thái nhiều lần nhận lại đúng một token; thời gian phản ứng tính từ lúc được mời; token đã dùng thì hỏi lại cũng không dùng được nữa |
+| `orderPersistedLateStillLeavesTimeToPay` | Worker ghi DB trễ 10 phút: đơn không bị hết hạn ngay, vẫn thanh toán được, rồi vẫn hết hạn sau thời gian tối thiểu |
 | `leasesNeverExceedStockAndExpiredOnesPassToNextInLine` | Số lượt đang mở không vượt tồn kho; lượt quá hạn chuyển người kế tiếp |
 | `statusIsReadOnlyAndOnlyTheAdmissionTickGrantsTurns` | Hỏi trạng thái không cấp lượt; gọi `admit` lặp lại (nhiều instance) không cấp thừa; gợi ý nhịp hỏi |
 | `sharedProgressIsCacheableAndLetsClientsComputeTheirPosition` | Endpoint tiến độ chung có `Cache-Control`; `rank − cursor + 1` khớp vị trí riêng |
@@ -132,6 +134,9 @@ tools/bench-status.mjs          đo thông lượng đường đọc
 | `flashsale.fairness` | RANDOM | `RANDOM` (bốc thăm) hoặc `FIFO` (đối chứng) |
 | `flashsale.lease-seconds` | 60 | Thời gian giữ lượt mua cho người đến lượt |
 | `flashsale.payment-window-seconds` | 600 | Hạn thanh toán sau khi giữ suất |
+| `flashsale.min-payment-seconds` | 120 | Đơn vào DB trễ (DB chậm/sập) vẫn còn ít nhất chừng này để thanh toán |
+| `flashsale.hmac-secret` | env `FLASHSALE_HMAC_SECRET` | Khóa ký token/challenge; mặc định chỉ dùng cho demo |
+| `flashsale.admin-key` | env `FLASHSALE_ADMIN_KEY` | Khóa cho `/api/admin/*`; mặc định chỉ dùng cho demo |
 | `flashsale.admission-tick-ms` | 100 | Nhịp cấp lượt |
 | `flashsale.rate-limit-per-second` | 5 | Mỗi user, mỗi nhóm endpoint |
 | `flashsale.worker-reclaim-idle-ms` | 30000 | Message chưa ACK quá lâu thì worker khác nhận về |

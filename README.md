@@ -8,7 +8,7 @@ Repo gồm ba bài, mỗi bài nằm trong một thư mục riêng và có READM
 | Thư mục | Bài | Nội dung | Điểm chính |
 |---|---|---|---|
 | [`bai1/`](bai1/) | Chống "giữ ghế ảo" (seat hoarding) | Tài liệu thiết kế + sơ đồ chuỗi | 17 lỗ hổng (V1–V17), phòng thủ nhiều tầng với luật nghiệp vụ là tầng chính, Redis + Lua nguyên tử, PostgreSQL `UNIQUE` làm chốt cuối |
-| [`bai2/`](bai2/) | Flash sale 100 sản phẩm / 100.000 người | Tài liệu thiết kế + demo chạy được | Phễu chặn traffic trước DB, trừ kho nguyên tử bằng Lua, ba lớp chống bán vượt, phòng chờ bốc thăm để bot mất lợi thế tốc độ, 15 test tích hợp |
+| [`bai2/`](bai2/) | Flash sale 100 sản phẩm / 100.000 người | Tài liệu thiết kế + demo chạy được | Phễu chặn traffic trước DB, trừ kho nguyên tử bằng Lua, ba lớp chống bán vượt, phòng chờ bốc thăm để bot mất lợi thế tốc độ, 17 test tích hợp |
 | [`bai-test-fe-hoang-ha/`](bai-test-fe-hoang-ha/) | Landing page Hoàng Hà Digital | Front-end responsive | Vite, GSAP, Lenis; Desktop 1440px và Mobile 390px. **Demo:** https://nghuyne.github.io/hoang-ha-digital-assessment/ |
 
 ## Cấu trúc
@@ -35,7 +35,7 @@ Repo gồm ba bài, mỗi bài nằm trong một thư mục riêng và có READM
 cd bai2/demo
 docker compose up -d          # Redis + PostgreSQL
 ./mvnw spring-boot:run        # http://localhost:8080, dashboard: /admin.html
-./mvnw test                   # 15 test tích hợp (Testcontainers)
+./mvnw test                   # 17 test tích hợp (Testcontainers)
 node tools/simulate.mjs       # mô phỏng 200 người thật + 200 bot
 ```
 

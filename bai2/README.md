@@ -3,7 +3,7 @@
 > **Tóm tắt**
 > 1. **Không bán vượt:** 100.000 request không bao giờ chạm DB. Một **phễu** (CDN, phòng chờ, Redis, Stream, worker) chỉ để khoảng 100 lệnh ghi đi tới PostgreSQL. Quyết định "ai được mua" nằm trong **một script Lua nguyên tử** trên Redis. DB vẫn tự chặn bằng `UPDATE ... WHERE sold < total` + `CHECK (sold <= total)` + `UNIQUE (event_id, user_id)`. Ba lớp độc lập: một lớp sai thì lớp sau vẫn chặn.
 > 2. **Công bằng giữa người và bot:** không thể phân biệt người/bot tuyệt đối, nên tôi **xóa lợi thế tốc độ** thay vì cố đoán. Ai vào phòng chờ trước giờ G được **bốc thăm thứ tự**. Đến lượt thì được **giữ riêng một suất 60 giây**. Mỗi danh tính tốn chi phí (SĐT, PoW, 1 suất/người). Bot lười bị lọc bằng tín hiệu trình duyệt và rate limit.
-> 3. **Demo chạy được:** Spring Boot 3.5 + Redis 7 + PostgreSQL 16, giao diện mua hàng, dashboard vận hành, script mô phỏng bot, **15 test tích hợp** trên Redis/PostgreSQL thật (Testcontainers).
+> 3. **Demo chạy được:** Spring Boot 3.5 + Redis 7 + PostgreSQL 16, giao diện mua hàng, dashboard vận hành, script mô phỏng bot, **17 test tích hợp** trên Redis/PostgreSQL thật (Testcontainers).
 
 **Kết quả đo từ demo** (chi tiết ở [mục 7](#7-demo-và-kết-quả-đo)):
 
@@ -88,7 +88,7 @@ Tính trước để chọn kiến trúc, không chọn theo cảm tính.
 | 0 | **CDN** | 100.000 người tải trang | Trang sản phẩm, JS, ảnh tĩnh. Endpoint tiến độ hàng chờ cache 1 giây. Bot score ở edge (JA3/JA4, ASN). |
 | 1 | **API Gateway** | vài chục nghìn req/s | Xác thực JWT, rate limit theo IP/subnet/thiết bị, chặn request không có token phòng chờ. |
 | 2 | **Phòng chờ** (Redis ZSET) | 100.000 lượt vào, mỗi người 1 lần | Xếp hàng (bốc thăm), cấp **lượt mua** đúng bằng số suất còn trống. |
-| 3 | **Order Service** (stateless, N instance) | chỉ người có lượt | Kiểm token, chống bot, gọi **Lua trừ kho**. Hết hàng thì trả lời từ cache trong bộ nhớ. |
+| 3 | **Order Service** (stateless, N instance) | chỉ người có lượt | Kiểm token, chống bot, gọi **Lua trừ kho**. Không cần cache "hết hàng": số lượt đang mở không vượt tồn kho, nên đám đông dừng ở phòng chờ. |
 | 4 | **Redis** (`reserve.lua`) | như trên | **Quyết định nguyên tử** ai được mua: 1 suất/người, kho > 0, ghi đơn vào Stream trong cùng bước. |
 | 5 | **Redis Stream** + worker | **~100 message** | Hàng đợi bền giữa Redis và DB: consumer group, ACK, nhận lại message bỏ dở, dead-letter. |
 | 6 | **PostgreSQL** | **~100 lệnh ghi** | Nguồn sự thật. `UPDATE` có điều kiện + `CHECK` + `UNIQUE`. |
@@ -136,17 +136,17 @@ Client tự tính vị trí của mình bằng `ahead = rank − cursor + 1`. `r
 
 **Vào hàng và chờ lượt**
 
-4. Client lấy challenge PoW, giải trong Web Worker (~1 giây), gọi `POST /queue/join`. Script `join.lua` gán thứ tự: **bốc thăm** nếu vào trước giờ G, theo thứ tự đến nếu vào sau.
+4. Client lấy challenge PoW, giải trong Web Worker (16 bit ≈ 65.000 phép SHA-256: khoảng 1 giây với WebCrypto trên trình duyệt), gọi `POST /queue/join`. Script `join.lua` gán thứ tự: **bốc thăm** nếu vào trước giờ G, theo thứ tự đến nếu vào sau.
 5. Sau giờ G, bộ hẹn giờ chạy `admit.lua` 10 lần/giây. Mỗi lần nó trả lại suất của những lượt đã quá hạn, rồi mời người kế tiếp cho đến khi `lượt đang mở + đã bán = tồn kho`.
-6. Client theo dõi tiến độ chung `GET /queue/progress`. Khi tới lượt, `GET /queue/status` trả `ADMITTED` kèm **token mua**: ký HMAC, gắn userId, hết hạn cùng lượt, dùng một lần.
+6. Client theo dõi tiến độ chung `GET /queue/progress`. Khi tới lượt, `GET /queue/status` trả `ADMITTED` kèm **token mua**: ký HMAC, gắn userId, hết hạn cùng lượt, dùng một lần. Mỗi lượt có **đúng một token**: `jti` và thời điểm cấp suy ra từ chính lượt (không ngẫu nhiên, không lấy giờ lúc hỏi), nên hỏi trạng thái nhiều lần chỉ nhận lại token cũ, không sinh token mới.
 
 **Mua (đường nóng, không chạm DB)**
 
 7. Người dùng bấm "Mua ngay": `POST /buy` kèm token và tín hiệu trình duyệt.
 8. **Order Service**, các bước rẻ chạy trước:
-   - a. Cache "hết hàng" trong bộ nhớ (hiệu lực 1 giây): hết thì trả `410` ngay, không tốn I/O.
-   - b. Kiểm chữ ký token, đúng user, còn hạn (theo giờ Redis, không theo giờ client).
-   - c. Thời gian phản ứng do **server** đo (từ lúc cấp token đến lúc bấm), và điểm rủi ro trình duyệt.
+   - a. Kiểm chữ ký token, đúng user, còn hạn (theo giờ Redis, không theo giờ client).
+   - b. Thời gian phản ứng do **server** đo (từ lúc được cấp lượt đến lúc bấm), và điểm rủi ro trình duyệt.
+   - Các bước này chạy **trước** khi dùng token, nên `TOO_FAST` hay `CHALLENGE_REQUIRED` không làm mất lượt: khách bấm lại được.
 9. **Trừ kho nguyên tử** bằng [`reserve.lua`](demo/src/main/resources/lua/reserve.lua). Redis chạy script đơn luồng, không request nào chen vào được:
 
    ```lua
@@ -158,7 +158,7 @@ Client tự tính vị trí của mình bằng `ahead = rank − cursor + 1`. `r
    DECR stock
    HSET buyers userId orderId     -- 1 suất / người
    ZREM leases userId             -- lượt đã dùng: stock -1 và lease -1, số suất trống không đổi
-   XADD orders * orderId userId eventId payBy   -- ghi đơn vào Stream TRONG CÙNG script
+   XADD orders * orderId userId eventId payBy paymentMs   -- ghi đơn vào Stream TRONG CÙNG script
    return RESERVED, orderId, payBy
    ```
 
@@ -170,7 +170,8 @@ Client tự tính vị trí của mình bằng `ahead = rank − cursor + 1`. `r
 11. [`OrderWorker`](demo/src/main/java/com/hoangha/flashsale/order/OrderWorker.java) đọc Stream qua consumer group (`XREADGROUP`), mỗi message chạy một transaction:
 
     ```sql
-    INSERT INTO orders (id, event_id, user_id, status, expires_at) VALUES (?, ?, ?, 'RESERVED', ?)
+    INSERT INTO orders (id, event_id, user_id, status, expires_at)
+    VALUES (?, ?, ?, 'RESERVED', GREATEST(:payBy, now() + :minRemaining))
     ON CONFLICT DO NOTHING;                     -- xử lý lại cùng message: không tạo đơn thứ hai
     UPDATE inventory SET sold = sold + 1
     WHERE event_id = ? AND sold < total;        -- 0 dòng => DB đã đủ 100 => ROLLBACK
@@ -178,6 +179,8 @@ Client tự tính vị trí của mình bằng `ahead = rank − cursor + 1`. `r
     ```
 
     Nếu `UPDATE` trả 0 dòng (Redis cho qua nhưng DB đã đủ 100), đơn bị đánh dấu `REJECTED_NO_STOCK`, khách được báo, và hệ thống cảnh báo để đối soát.
+
+    `GREATEST` xử lý trường hợp worker ghi trễ: bình thường `expires_at = payBy` (hạn đã báo khách). Nếu DB sập lâu hơn hạn thanh toán, đơn vào DB vẫn còn ít nhất `min(min-payment-seconds, hạn thanh toán)` (mặc định 120 giây), thay vì bị job hết hạn hủy ngay khi khách chưa có giây nào để trả tiền.
 
 ### 4.3 Vì sao chắc chắn không vượt 100: ba lớp độc lập
 
@@ -221,7 +224,7 @@ INCRBY fs:{ev}:stock :n                  -- SAU commit
 | Worker sập trước khi ACK | Message nằm trong pending list (PEL) | Khởi động lại với **cùng tên consumer** thì đọc lại PEL của mình. Ghi DB idempotent theo `orderId` | |
 | Instance worker chết hẳn | PEL của nó không ai đọc | Worker còn sống quét `XPENDING`, message idle > 30 s thì `XCLAIM` về xử lý | có |
 | Message hỏng (poison) | Xử lý lỗi lặp lại | Quá 5 lần giao thì chuyển **dead-letter stream** + ACK, để không chặn đơn của người khác | có |
-| DB chậm/sập vài phút | Đơn dồn lại | Stream đóng vai bộ đệm, khách thấy `PENDING`. DB hồi phục thì worker ghi tiếp. Không mất đơn, không bán thêm | |
+| DB chậm/sập vài phút | Đơn dồn lại | Stream đóng vai bộ đệm, khách thấy `PENDING`. DB hồi phục thì worker ghi tiếp. Không mất đơn, không bán thêm. Sập lâu hơn hạn thanh toán thì đơn vẫn được thêm thời gian tối thiểu để trả tiền (`GREATEST` ở bước 11) | có |
 | Redis failover mất vài lệnh `DECR` | Redis tưởng còn nhiều hơn thực tế | DB chặn (lớp 2), đơn thừa bị `REJECTED_NO_STOCK`. Sau failover **nạp lại tồn kho Redis từ DB** (mục 6.3) | có |
 | Redis mất hẳn | Không quyết định được ai mua | **Ngừng bán** (`503 + Retry-After`) thay vì ghi thẳng DB | |
 | Webhook thanh toán gửi lặp | Hai lần "đã trả tiền" | `UPDATE ... WHERE status = 'RESERVED'` chỉ đổi một lần; lần sau `ALREADY_PAID` | có |
@@ -264,8 +267,8 @@ Cách sửa ([`admit.lua`](demo/src/main/resources/lua/admit.lua)):
 |---|---|---|
 | **Tài khoản đủ điều kiện** | Xác minh SĐT bằng OTP (1 SĐT = 1 tài khoản, chặn đầu số ảo), tài khoản tạo trước sự kiện ≥ 7 ngày, hoặc **đăng ký tham gia** trước 24 giờ | Ma sát cho người mới. Đổi lại có thời gian phân tích cụm tài khoản **trước** sự kiện |
 | **1 suất / danh tính** | Giới hạn theo user (đã cài). Khi thanh toán/giao hàng thêm giới hạn theo **SĐT, thẻ, địa chỉ giao, thiết bị** | Gia đình dùng chung địa chỉ có thể bị ảnh hưởng: có kênh khiếu nại |
-| **Proof-of-Work** | Vào phòng chờ phải giải SHA-256 (~1 giây CPU, chạy trong Web Worker). Challenge ký HMAC, gắn user, dùng một lần | Người thật trả 1 giây một lần, kẻ chạy 10.000 tài khoản trả 10.000 lần. Máy yếu chậm hơn: độ khó chỉnh theo rủi ro |
-| **Token phòng chờ** | Không có token (chỉ cấp khi đến lượt) thì không mua được. Token gắn user, có hạn, dùng một lần | Gọi thẳng API mua bị chặn hết (demo: 300/300) |
+| **Proof-of-Work** | Vào phòng chờ phải giải SHA-256 16 bit (≈ 65.000 phép băm, chạy trong Web Worker). Challenge ký HMAC, gắn user, dùng một lần | **Chỉ là lớp làm chậm, không phải rào cản chính.** Trình duyệt mất khoảng 1 giây, nhưng code native giải trong vài ms: 10.000 tài khoản chỉ tốn vài giây CPU. Chi phí thật của mỗi danh tính nằm ở SĐT và tuổi tài khoản. Muốn PoW có tác dụng hơn thì tăng số bit theo điểm rủi ro (mỗi bit gấp đôi chi phí), đổi lại máy yếu chờ lâu hơn |
+| **Token phòng chờ** | Không có token (chỉ cấp khi đến lượt) thì không mua được. Token gắn user, có hạn, dùng một lần; mỗi lượt đúng một token | Gọi thẳng API mua bị chặn hết (demo: 300/300) |
 
 ### 5.5 (C) Lọc bot "lười" và chống dội request
 
@@ -274,7 +277,7 @@ Cách sửa ([`admit.lua`](demo/src/main/resources/lua/admit.lua)):
 | Bot score: TLS fingerprint JA3/JA4, ASN datacenter, header bất thường | CDN/WAF (Cloudflare Bot Management, AWS WAF Bot Control) | Chặn script `curl`/`requests`, VPS |
 | CAPTCHA vô hình (Turnstile / reCAPTCHA v3) | Lúc vào phòng chờ | Chỉ hiện thử thách khi điểm rủi ro cao |
 | `navigator.webdriver`, click `isTrusted`, chuyển động chuột/chạm, màn hình | Trình duyệt, gửi kèm request mua | **Giả được**: chỉ bắt Selenium/Puppeteer mặc định. Điểm cao thì đòi CAPTCHA, không chặn cứng |
-| **Thời gian phản ứng do server đo** | Server | Không giả được con số, nhưng bot có thể chờ. Tác dụng chính là xóa lợi thế tốc độ |
+| **Thời gian phản ứng do server đo** | Server | Đo từ lúc được cấp lượt, nên hỏi lại trạng thái không "đặt lại đồng hồ". Không giả được con số, nhưng bot chỉ cần chờ 300 ms là qua: đây không phải lớp chặn bot, tác dụng chính là cùng với giữ suất theo lượt xóa lợi thế tốc độ |
 | **Rate limit theo user** (đã cài: 5 req/s mỗi nhóm endpoint, trả `429 + Retry-After`) | App, bộ đếm trong Redis | Bot dội trạng thái mỗi 50 ms bị chặn (demo: hàng chục nghìn request `429` mỗi vòng). Redis lỗi thì cho qua (fail-open) vì các cổng phía sau vẫn đảm bảo đúng đắn |
 | Rate limit theo IP/subnet/thiết bị | Gateway/CDN | Chiều không phụ thuộc tài khoản |
 
@@ -355,16 +358,16 @@ Một lần chạy khác của chế độ bốc thăm: người thật 62, bot 
 - Bot tinh vi là scalper: giả tín hiệu trình duyệt hoàn hảo, giải PoW, canh đúng giờ G, luôn thanh toán. Mỗi bot có cơ hội đúng bằng một người thường, không hơn. Muốn nhiều suất hơn thì phải có nhiều tài khoản thật, và đó là việc của mục 5.4 và 5.6.
 - Gọi thẳng API mua, không qua phòng chờ: `{ INVALID_TOKEN: 300 }`.
 
-### 7.2 Test tích hợp (15 test, Redis + PostgreSQL thật qua Testcontainers)
+### 7.2 Test tích hợp (17 test, Redis + PostgreSQL thật qua Testcontainers)
 
 | Nhóm | Test |
 |---|---|
 | Không bán vượt | 10.000 request đồng thời ra đúng 100 đơn; Redis lệch thì DB vẫn chặn ở 100 |
-| Cổng chống bot | Không token / token giả / token người khác / quá nhanh / headless / hết hạn / không có lượt; token dùng một lần; PoW sai, của người khác, dùng lại |
+| Cổng chống bot | Không token / token giả / token người khác / quá nhanh / headless / hết hạn / không có lượt; token dùng một lần; hỏi trạng thái nhiều lần vẫn chỉ một token; PoW sai, của người khác, dùng lại |
 | Công bằng | Bốc thăm làm tốc độ vô nghĩa; FIFO thưởng người nhanh nhất (đối chứng); người đến sau giờ G xếp sau |
 | Phòng chờ | Lượt đang mở không vượt tồn kho, lượt quá hạn chuyển người kế tiếp; hỏi trạng thái không cấp lượt; tiến độ chung cache được và khớp vị trí riêng |
 | Worker | Nhận lại đơn của instance đã chết (`XCLAIM`); message hỏng chuyển dead-letter, không chặn hàng đợi |
-| Vòng đời đơn | Đơn không thanh toán hết hạn, suất về đúng người kế tiếp; webhook gửi lặp idempotent; thanh toán sau hạn bị từ chối |
+| Vòng đời đơn | Đơn không thanh toán hết hạn, suất về đúng người kế tiếp; webhook gửi lặp idempotent; thanh toán sau hạn bị từ chối; đơn vào DB trễ vẫn còn thời gian thanh toán |
 | Rate limit | Dội request bị `429 + Retry-After`, người khác không bị ảnh hưởng |
 
 ### 7.3 Số đo hiệu năng và cách đọc
@@ -392,7 +395,7 @@ Cách đọc đúng: con số tuyệt đối trên laptop không quan trọng b�
 | Redis là cổng quyết định | Nhanh, không khóa DB | Thêm thành phần; cần đối soát với DB khi failover |
 | Ghi đơn bất đồng bộ (202 + Stream) | DB không bị dồn, chịu được DB chậm | Khách thấy `PENDING` vài chục ms; logic đối soát phức tạp hơn |
 | Tách tiến độ chung khỏi trạng thái riêng | Tải Redis không tăng theo số người chờ | Client phức tạp hơn; vị trí hiển thị trễ tối đa ~1 giây |
-| Bắt buộc đăng nhập + SĐT + PoW | Mỗi tài khoản giả tốn tiền và CPU | Ma sát; máy yếu chậm hơn vài giây |
+| Bắt buộc đăng nhập + SĐT + PoW | Mỗi tài khoản giả tốn tiền (SĐT); PoW chỉ làm chậm | Ma sát; máy yếu chậm hơn vài giây |
 | Ngừng bán khi Redis lỗi | Không bao giờ bán vượt | Mất sẵn sàng trong lúc failover (vài chục giây) |
 | Rate limit fail-open | Redis lỗi không làm sập cả trang | Mất lớp rate limit trong lúc Redis lỗi (các cổng sau vẫn đúng) |
 
@@ -400,6 +403,7 @@ Cách đọc đúng: con số tuyệt đối trên laptop không quan trọng b�
 
 - Danh tính lấy từ header `X-User-Id` thay vì JWT đã xác thực.
 - Thanh toán là endpoint giả lập webhook (chưa có chữ ký HMAC của cổng thanh toán, chưa có hoàn tiền).
-- Chưa có CAPTCHA thật, bot score ở edge, rate limit theo IP ở gateway.
+- Chưa có CAPTCHA thật, bot score ở edge, rate limit theo IP ở gateway. Khi gặp `CHALLENGE_REQUIRED`, demo giữ nguyên lượt và cho bấm lại (người thật bấm bằng chuột/chạm thì qua), nhưng **không có thử thách để vượt**: trình duyệt có `navigator.webdriver = true` sẽ bị đòi thử thách mãi và mất lượt sau 60 giây. Thực tế bước này hiện CAPTCHA, qua CAPTCHA thì mua tiếp.
+- `hmac-secret` và `admin-key` đọc từ biến môi trường `FLASHSALE_HMAC_SECRET`, `FLASHSALE_ADMIN_KEY`. Giá trị mặc định trong `application.yml` chỉ để chạy demo trên máy; app ghi cảnh báo khi khởi động bằng giá trị mặc định.
 - Đối soát Redis–DB sau failover (mục 6.3) mới là thiết kế, chưa có endpoint.
 - Chạy một Redis đơn, không có replica/Sentinel; `status.lua` đã sẵn sàng chạy trên replica nhưng demo chưa định tuyến đọc sang replica.
