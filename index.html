@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hoàng Hà Digital — đối tác chuyển đổi số: thiết kế website, phát triển phần mềm, ứng dụng và hạ tầng cloud theo yêu cầu doanh nghiệp.">
+    <meta name="theme-color" content="#0b1d42">
+    <title>Hoàng Hà Digital — Giải pháp số cho doanh nghiệp</title>
+    <link rel="icon" type="image/png" href="/brand/logo-mark.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+      document.documentElement.classList.add('js');
+      // Dự phòng: nếu JS chính lỗi, không để preloader che trang mãi
+      setTimeout(function () {
+        var p = document.querySelector('[data-preloader]');
+        if (p) { p.remove(); document.body.classList.remove('is-loading'); document.documentElement.classList.add('no-motion'); }
+      }, 8000);
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body class="is-loading">
+    <a class="skip-link" href="#main">Đi tới nội dung chính</a>
+
+    <!-- Preloader -->
+    <div class="preloader" data-preloader aria-hidden="true">
+      <div class="preloader-inner">
+        <img class="preloader-logo" src="/brand/logo-mark.png" alt="" width="153" height="172">
+        <div class="preloader-bar"><span data-preloader-bar></span></div>
+        <p class="preloader-count"><span data-preloader-count>0</span>%</p>
+      </div>
+      <div class="preloader-curtain"></div>
+    </div>
+
+    <div class="scroll-progress" data-progress aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="site-header" data-header>
+      <div class="header-inner container">
+        <a class="brand" href="#top" aria-label="Hoàng Hà Digital — Trang chủ">
+          <img src="/brand/logo-mark.png" alt="" width="153" height="172">
+          <span class="brand-text"><strong>HOÀNG HÀ</strong><small>DIGITAL</small></span>
+        </a>
+        <nav class="nav" aria-label="Điều hướng chính" data-nav>
+          <span class="nav-pill" data-nav-pill aria-hidden="true"></span>
+          <a href="#about">Về chúng tôi</a>
+          <a href="#services">Dịch vụ</a>
+          <a href="#why">Lợi thế</a>
+          <a href="#process">Quy trình</a>
+        </nav>
+        <div class="header-actions">
+          <a class="header-phone" href="tel:+84943447206">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+            0943 447 206
+          </a>
+          <a class="btn btn-primary btn-sm magnetic" href="#contact"><span>Liên hệ</span><i class="btn-arrow" aria-hidden="true">→</i></a>
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+            <span class="sr-only">Mở menu</span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+      <nav aria-label="Điều hướng di động">
+        <a href="#about"><span>01</span>Về chúng tôi</a>
+        <a href="#services"><span>02</span>Dịch vụ</a>
+        <a href="#why"><span>03</span>Lợi thế</a>
+        <a href="#process"><span>04</span>Quy trình</a>
+        <a href="#contact"><span>05</span>Liên hệ</a>
+      </nav>
+      <div class="mobile-menu-foot">
+        <a class="btn btn-gold" href="tel:+84943447206">Gọi 0943 447 206</a>
+        <p>Nam Trực · Ninh Bình · Việt Nam</p>
+      </div>
+    </div>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero" id="top">
+        <canvas class="hero-canvas" data-network aria-hidden="true"></canvas>
+        <div class="hero-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="hero-gridlines" aria-hidden="true"></div>
+
+        <div class="container hero-layout">
+          <div class="hero-copy">
+            <p class="badge hero-anim">
+              <span class="badge-dot"></span>
+              Đối tác chuyển đổi số cho doanh nghiệp Việt
+            </p>
+            <h1 class="hero-title" data-split>
+              Kiến tạo giải pháp số
+              <span class="text-gradient">giúp doanh nghiệp</span>
+              bứt&nbsp;phá.
+            </h1>
+            <p class="hero-lead hero-anim">
+              Từ website, phần mềm quản trị đến hạ tầng cloud — Hoàng Hà thiết kế và xây dựng sản phẩm số
+              <strong>đẹp, nhanh, vận hành ổn định</strong> và sẵn sàng mở rộng cùng bạn.
+            </p>
+            <div class="hero-ctas hero-anim">
+              <a class="btn btn-primary btn-lg magnetic" href="#contact"><span>Nhận tư vấn miễn phí</span><i class="btn-arrow" aria-hidden="true">→</i></a>
+              <a class="btn btn-ghost btn-lg" href="#services">
+                <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                <span>Khám phá dịch vụ</span>
+              </a>
+            </div>
+            <ul class="hero-checks hero-anim">
+              <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Tư vấn &amp; báo giá trong 24h</li>
+              <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Bàn giao 100% mã nguồn</li>
+              <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Bảo hành dài hạn</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual" data-hero-visual aria-hidden="true">
+            <div class="orbit orbit-1"><span class="orbit-dot"></span></div>
+            <div class="orbit orbit-2"><span class="orbit-dot gold"></span><span class="orbit-dot alt"></span></div>
+            <div class="orbit orbit-3"></div>
+            <div class="hero-core" data-depth="0.4">
+              <div class="core-glow"></div>
+              <img src="/brand/logo-mark.png" alt="" width="153" height="172">
+            </div>
+
+            <div class="float-card card-analytics" data-depth="0.9">
+              <div class="fc-head"><span>Lượt truy cập</span><b class="up">↑ 128%</b></div>
+              <svg class="fc-chart" viewBox="0 0 220 80" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2f7de1" stop-opacity=".35"/><stop offset="1" stop-color="#2f7de1" stop-opacity="0"/></linearGradient>
+                  <linearGradient id="chartStroke" x1="0" x2="1"><stop offset="0" stop-color="#2f7de1"/><stop offset="1" stop-color="#f2a52e"/></linearGradient>
+                </defs>
+                <path class="fc-area" d="M0 70 C25 66 35 52 60 55 S95 40 115 42 S150 20 170 24 S200 8 220 6 V80 H0Z" fill="url(#chartFill)"/>
+                <path class="fc-line" d="M0 70 C25 66 35 52 60 55 S95 40 115 42 S150 20 170 24 S200 8 220 6" fill="none" stroke="url(#chartStroke)" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <div class="float-card card-deploy" data-depth="0.6">
+              <span class="fc-icon"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div><b>Triển khai thành công</b><small>production · 2.3s</small></div>
+            </div>
+
+            <div class="float-card card-perf" data-depth="1.1">
+              <div class="ring" style="--p:98"><span>98</span></div>
+              <div><b>Performance</b><small>Lighthouse score</small></div>
+            </div>
+
+            <div class="float-card card-code" data-depth="0.75">
+              <code><i>const</i> growth = <b>build</b>(<em>'ý tưởng'</em>);</code>
+            </div>
+          </div>
+        </div>
+
+        <div class="container hero-stats">
+          <div class="stat"><strong><span data-count="99.9" data-decimals="1">0</span>%</strong><span>Uptime hệ thống cam kết</span></div>
+          <div class="stat"><strong>&lt;<span data-count="2">0</span>s</strong><span>Thời gian tải trang mục tiêu</span></div>
+          <div class="stat"><strong><span data-count="24">0</span>/7</strong><span>Giám sát &amp; hỗ trợ kỹ thuật</span></div>
+          <div class="stat"><strong><span data-count="100">0</span>%</strong><span>Mã nguồn thuộc về khách hàng</span></div>
+        </div>
+
+      </section>
+
+      <!-- SOCIAL PROOF -->
+      <section class="partners" id="partners" aria-labelledby="partners-title">
+        <div class="container partners-head reveal">
+          <p id="partners-title">Đồng hành cùng các nền tảng &amp; đối tác công nghệ hàng đầu</p>
+        </div>
+        <div class="marquee" data-marquee>
+          <div class="marquee-row">
+            <ul class="marquee-track">
+              <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" stroke-width="1.4"/><ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" stroke-width="1.4" transform="rotate(120 12 12)"/></svg>React</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 3 22 20H2Z"/></svg>Vercel</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Node.js</li>
+              <li><svg viewBox="0 0 24 24"><path d="M6 14c-2.2 0-4-1.6-4-3.6S3.8 7 6 7c.5-2.3 2.6-4 5-4 2.6 0 4.7 1.9 5 4.3 2.8.1 5 2 5 4.4S18.8 16 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 19c4 2 10 2 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>AWS</li>
+              <li><svg viewBox="0 0 24 24"><rect x="5" y="2" width="7" height="7" rx="3.5"/><rect x="12" y="2" width="7" height="7" rx="3.5" opacity=".6"/><rect x="5" y="9" width="7" height="7" rx="3.5" opacity=".8"/><circle cx="15.5" cy="12.5" r="3.5" opacity=".5"/><path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 0 1-7 0Z" opacity=".7"/></svg>Figma</li>
+              <li><svg viewBox="0 0 24 24"><path d="M4 12h16M7 8h3V5H7Zm4 0h3V5h-3Zm-4 4h3V9H7Zm4 0h3V9h-3Zm4 0h3V9h-3Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12c0 5 4 7 8 7 6 0 9-4 10-7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Docker</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 3c-4.4 0-8 1.3-8 3v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6c0-1.7-3.6-3-8-3Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 6c0 1.7 3.6 3 8 3s8-1.3 8-3M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>PostgreSQL</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 8 8h-8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Google Cloud</li>
+              <li><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 9h5M10.5 9v8M14 15.5c.6.8 1.5 1.3 2.5 1.3 1.2 0 2-.6 2-1.6 0-2.2-4-1.3-4-3.4 0-.9.8-1.6 2-1.6.8 0 1.6.4 2 1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>TypeScript</li>
+              <li><svg viewBox="0 0 24 24"><path d="M2 12C4 6 8 6 12 9s8 3 10-3c-2 6-6 6-10 3S4 6 2 12Zm0 6c2-6 6-6 10-3s8 3 10-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Tailwind</li>
+            </ul>
+          </div>
+          <div class="marquee-row reverse">
+            <ul class="marquee-track">
+              <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 16V8l8 10V8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Next.js</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 2 3 7l9 5 9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Kubernetes</li>
+              <li><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.8"/></svg>Flutter</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 2c3 3 4 6 4 10s-1 7-4 10c-3-3-4-6-4-10s1-7 4-10Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 22v-8" stroke="currentColor" stroke-width="1.8"/></svg>MongoDB</li>
+              <li><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Laravel</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-4 8h8m-8 4h8" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>Redis</li>
+              <li><svg viewBox="0 0 24 24"><path d="M3 12 12 3l9 9-9 9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3"/></svg>Cloudflare</li>
+              <li><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5Zm0 10v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>GitHub</li>
+              <li><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2" opacity=".6"/><rect x="3" y="13" width="8" height="8" rx="2" opacity=".6"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Microsoft Azure</li>
+              <li><svg viewBox="0 0 24 24"><path d="M5 19 12 5l7 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 14h8" stroke="currentColor" stroke-width="2"/></svg>Vue.js</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="about section" id="about">
+        <div class="container about-layout">
+          <div class="about-left">
+            <p class="eyebrow reveal"><span>01</span>Về chúng tôi</p>
+            <h2 class="section-title" data-split>Công nghệ là công&nbsp;cụ.<br><span class="text-gradient">Tăng trưởng</span> là đích&nbsp;đến.</h2>
+            <p class="about-scrub" data-scrub>
+              Hoàng Hà Digital là công ty giải pháp số đến từ Ninh Bình. Chúng tôi không bắt đầu bằng công nghệ — chúng tôi bắt đầu bằng việc hiểu doanh nghiệp của bạn, rồi thiết kế những sản phẩm số thực sự tạo ra giá trị: dễ dùng, vận hành ổn định và lớn lên cùng bạn.
+            </p>
+            <a class="link-arrow reveal" href="#why">Vì sao doanh nghiệp chọn chúng tôi <span aria-hidden="true">→</span></a>
+          </div>
+
+          <div class="about-right">
+            <div class="brand-story reveal tilt">
+              <div class="story-visual">
+                <span class="story-ring"></span><span class="story-ring r2"></span>
+                <img src="/brand/logo-mark.png" alt="Biểu tượng Hoàng Hà Digital" width="153" height="172" loading="lazy">
+              </div>
+              <div class="story-copy">
+                <p class="mono-label">Ý nghĩa biểu tượng</p>
+                <h3>Chữ <b class="c-blue">H</b> kết nối mạng lưới</h3>
+                <p>Mạng lưới điểm nút thể hiện công nghệ và sự kết nối; dải <b class="c-gold">vàng</b> uốn lượn tượng trưng cho dòng chảy tăng trưởng — đúng như cách chúng tôi đồng hành cùng khách hàng.</p>
+              </div>
+            </div>
+
+            <div class="about-cards">
+              <article class="mini-card reveal">
+                <span class="mini-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
+                <h3>Sứ mệnh</h3>
+                <p>Đưa công nghệ đến gần hơn với mọi doanh nghiệp Việt, bằng giải pháp vừa vặn và hiệu quả.</p>
+              </article>
+              <article class="mini-card reveal">
+                <span class="mini-icon"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <h3>Tầm nhìn</h3>
+                <p>Trở thành đối tác công nghệ tin cậy hàng đầu cho doanh nghiệp vừa và nhỏ tại Việt Nam.</p>
+              </article>
+            </div>
+
+            <dl class="facts reveal">
+              <div><dt>Pháp nhân</dt><dd>Công ty TNHH Giải pháp số Hoàng Hà</dd></div>
+              <div><dt>Mã số thuế</dt><dd>0601330926</dd></div>
+              <div><dt>Trụ sở</dt><dd>Nam Trực, Ninh Bình</dd></div>
+              <div><dt>Trạng thái</dt><dd><i class="live-dot"></i>Đang hoạt động</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section class="services section" id="services">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow reveal"><span>02</span>Dịch vụ cốt lõi</p>
+              <h2 class="section-title" data-split>Giải pháp trọn gói cho <span class="text-gradient">hành trình số</span> của bạn</h2>
+            </div>
+            <p class="section-desc reveal">Mỗi dịch vụ là một mảnh ghép. Khi kết hợp đúng cách, chúng tạo nên một hệ sinh thái số hoàn chỉnh cho doanh nghiệp.</p>
+          </div>
+
+          <div class="bento" data-spotlight-group>
+            <article class="svc svc-feature spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-tag">Phổ biến nhất</span>
+                <span class="svc-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+                <h3>Thiết kế &amp; phát triển Website</h3>
+                <p>Website doanh nghiệp, landing page và thương mại điện tử chuẩn SEO, tốc độ tải nhanh, hiển thị hoàn hảo trên mọi thiết bị.</p>
+                <ul class="chips"><li>Responsive</li><li>SEO-ready</li><li>CMS</li><li>E-commerce</li></ul>
+                <a class="svc-link" href="#contact">Tư vấn ngay <span aria-hidden="true">→</span></a>
+              </div>
+              <div class="svc-mock" aria-hidden="true">
+                <div class="mock-browser">
+                  <div class="mock-bar"><i></i><i></i><i></i><span>hoanghadigital.vn</span></div>
+                  <div class="mock-page">
+                    <div class="mock-nav"><b></b><span></span><span></span><span></span></div>
+                    <div class="mock-hero"><span class="l1"></span><span class="l2"></span><span class="l3"></span><em></em></div>
+                    <div class="mock-grid"><i></i><i></i><i></i></div>
+                  </div>
+                </div>
+                <div class="mock-phone"><span></span><i></i><i></i><i></i></div>
+              </div>
+            </article>
+
+            <article class="svc spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>
+                <h3>Phần mềm quản trị theo yêu cầu</h3>
+                <p>ERP, CRM, quản lý bán hàng, kho, nhân sự — số hóa đúng quy trình riêng của doanh nghiệp.</p>
+                <a class="svc-link" href="#contact">Tìm hiểu thêm <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+
+            <article class="svc spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-icon"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span>
+                <h3>Ứng dụng di động</h3>
+                <p>App iOS &amp; Android đa nền tảng, mượt mà, đồng bộ dữ liệu theo thời gian thực.</p>
+                <a class="svc-link" href="#contact">Tìm hiểu thêm <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+
+            <article class="svc spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-icon"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3Z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5Z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg></span>
+                <h3>UI/UX &amp; Nhận diện số</h3>
+                <p>Nghiên cứu người dùng, wireframe, prototype và design system nhất quán cho sản phẩm.</p>
+                <div class="art-design" aria-hidden="true"><span>Aa</span><i></i><i></i><i></i><i></i></div>
+                <a class="svc-link" href="#contact">Tìm hiểu thêm <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+
+            <article class="svc spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-icon"><svg viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 1 0 6 16.3"/><path d="M12 13v8m-3-3 3 3 3-3"/></svg></span>
+                <h3>Cloud, DevOps &amp; Bảo mật</h3>
+                <p>Kiến trúc hạ tầng, CI/CD tự động, giám sát 24/7 và sao lưu dữ liệu an toàn.</p>
+                <div class="art-uptime" aria-hidden="true"><div><i style="--h:62"></i><i style="--h:80"></i><i style="--h:70"></i><i style="--h:92"></i><i style="--h:76"></i><i style="--h:88"></i><i style="--h:100"></i><i style="--h:84"></i><i style="--h:72"></i><i style="--h:95"></i><i style="--h:86"></i><i style="--h:90"></i></div><small><b></b>All systems operational</small></div>
+                <a class="svc-link" href="#contact">Tìm hiểu thêm <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+
+            <article class="svc svc-wide spotlight tilt reveal">
+              <div class="svc-body">
+                <span class="svc-icon gold"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/><path d="M15 8h5v5"/></svg></span>
+                <h3>Tư vấn chuyển đổi số</h3>
+                <p>Đánh giá hiện trạng, xây dựng lộ trình công nghệ phù hợp với giai đoạn và ngân sách doanh nghiệp.</p>
+                <div class="svc-steps" aria-hidden="true">
+                  <div><b>Khảo sát</b><span></span></div>
+                  <div><b>Lộ trình</b><span></span></div>
+                  <div><b>Triển khai</b><span></span></div>
+                  <div><b>Tối ưu</b><span></span></div>
+                </div>
+                <a class="svc-link" href="#contact">Đặt lịch tư vấn <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHY US -->
+      <section class="why section" id="why">
+        <div class="why-bg" aria-hidden="true"></div>
+        <div class="container">
+          <div class="section-head on-dark">
+            <div>
+              <p class="eyebrow reveal"><span>03</span>Tại sao chọn chúng tôi</p>
+              <h2 class="section-title" data-split>Thiết kế có gu.<br><span class="text-gradient-gold">Kỹ thuật có chiều&nbsp;sâu.</span></h2>
+            </div>
+            <p class="section-desc reveal">Chúng tôi không đánh đổi trải nghiệm để lấy tốc độ, cũng không đánh đổi chất lượng để chạy theo xu hướng.</p>
+          </div>
+
+          <div class="why-grid">
+            <article class="why-card spotlight reveal">
+              <span class="why-num">01</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/></svg></span>
+              <h3>Hiểu trước khi xây</h3>
+              <p>Mục tiêu kinh doanh, hành vi người dùng và quy trình vận hành luôn đi trước mọi quyết định công nghệ.</p>
+            </article>
+            <article class="why-card spotlight reveal">
+              <span class="why-num">02</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
+              <h3>Một đội ngũ xuyên suốt</h3>
+              <p>Thiết kế và phát triển làm việc như một khối thống nhất, giữ trọn ý tưởng từ bản phác thảo đến khi ra mắt.</p>
+            </article>
+            <article class="why-card spotlight reveal">
+              <span class="why-num">03</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+              <h3>Bền vững &amp; bảo mật</h3>
+              <p>Kiến trúc sạch, dễ bảo trì, chuẩn bảo mật OWASP — sẵn sàng mở rộng khi doanh nghiệp tăng trưởng.</p>
+            </article>
+            <article class="why-card spotlight reveal">
+              <span class="why-num">04</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+              <h3>Chi phí minh bạch</h3>
+              <p>Báo giá rõ ràng theo hạng mục, không phát sinh ẩn. Tiến độ cập nhật định kỳ trong từng giai đoạn.</p>
+            </article>
+            <article class="why-card spotlight reveal">
+              <span class="why-num">05</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></span>
+              <h3>Tốc độ triển khai</h3>
+              <p>Quy trình Agile, phát hành theo sprint — bạn thấy sản phẩm chạy thật sau mỗi 1–2 tuần.</p>
+            </article>
+            <article class="why-card spotlight reveal">
+              <span class="why-num">06</span>
+              <span class="why-icon"><svg viewBox="0 0 24 24"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></span>
+              <h3>Đồng hành sau bàn giao</h3>
+              <p>Bảo hành, bảo trì và hỗ trợ kỹ thuật 24/7 — chúng tôi ở lại khi bạn cần, không chỉ đến khi nghiệm thu.</p>
+            </article>
+          </div>
+
+          <div class="compare reveal">
+            <div class="compare-col">
+              <p class="mono-label">Cách làm thông thường</p>
+              <ul>
+                <li><span class="x">×</span>Dùng template có sẵn, khó tùy biến</li>
+                <li><span class="x">×</span>Báo giá mơ hồ, phát sinh liên tục</li>
+                <li><span class="x">×</span>Bàn giao xong là "biến mất"</li>
+              </ul>
+            </div>
+            <div class="compare-vs" aria-hidden="true">VS</div>
+            <div class="compare-col highlight">
+              <p class="mono-label">Với Hoàng Hà Digital</p>
+              <ul>
+                <li><span class="v">✓</span>Thiết kế riêng theo thương hiệu</li>
+                <li><span class="v">✓</span>Chi phí cố định theo phạm vi đã chốt</li>
+                <li><span class="v">✓</span>Hỗ trợ dài hạn, phản hồi nhanh</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROCESS (horizontal pinned on desktop) -->
+      <section class="process" id="process">
+        <div class="process-pin" data-process-pin>
+          <div class="container process-head">
+            <p class="eyebrow reveal"><span>04</span>Quy trình làm việc</p>
+            <h2 class="section-title" data-split>Đi cùng nhau, <span class="text-gradient">từng bước rõ ràng.</span></h2>
+            <div class="process-progress" aria-hidden="true"><span data-process-bar></span></div>
+          </div>
+          <div class="process-track" data-process-track>
+            <article class="step">
+              <span class="step-num">01</span>
+              <p class="mono-label">Discover</p>
+              <h3>Lắng nghe &amp; khảo sát</h3>
+              <p>Workshop cùng đội ngũ của bạn để hiểu mục tiêu, người dùng và bài toán cốt lõi.</p>
+              <span class="step-time">1 – 3 ngày</span>
+            </article>
+            <article class="step">
+              <span class="step-num">02</span>
+              <p class="mono-label">Define</p>
+              <h3>Đề xuất &amp; báo giá</h3>
+              <p>Chốt phạm vi, kiến trúc, tiến độ và chi phí minh bạch theo từng hạng mục.</p>
+              <span class="step-time">2 – 5 ngày</span>
+            </article>
+            <article class="step">
+              <span class="step-num">03</span>
+              <p class="mono-label">Design</p>
+              <h3>Thiết kế UI/UX</h3>
+              <p>Wireframe, prototype tương tác và duyệt giao diện trước khi viết dòng code đầu tiên.</p>
+              <span class="step-time">1 – 3 tuần</span>
+            </article>
+            <article class="step">
+              <span class="step-num">04</span>
+              <p class="mono-label">Develop</p>
+              <h3>Phát triển &amp; kiểm thử</h3>
+              <p>Lập trình theo sprint, demo định kỳ, kiểm thử tự động và kiểm thử thủ công.</p>
+              <span class="step-time">2 – 8 tuần</span>
+            </article>
+            <article class="step step-final">
+              <span class="step-num">05</span>
+              <p class="mono-label">Launch &amp; Grow</p>
+              <h3>Ra mắt &amp; tối ưu</h3>
+              <p>Triển khai production, đào tạo sử dụng, giám sát và tối ưu liên tục sau ra mắt.</p>
+              <span class="step-time">Đồng hành dài hạn</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT CTA -->
+      <section class="contact section" id="contact">
+        <div class="container">
+          <div class="contact-card reveal">
+            <div class="contact-glow" aria-hidden="true"></div>
+            <div class="contact-info">
+              <p class="eyebrow light"><span>05</span>Bắt đầu dự án</p>
+              <h2 class="section-title" data-split>Sẵn sàng tạo nên điều <span class="text-gradient-gold">đáng nhớ?</span></h2>
+              <p class="contact-lead">Chia sẻ ý tưởng của bạn — chúng tôi sẽ phản hồi kèm đề xuất giải pháp trong vòng 24 giờ làm việc.</p>
+              <ul class="contact-list">
+                <li>
+                  <span class="ci"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></span>
+                  <div><small>Hotline</small><a href="tel:+84943447206">0943 447 206</a></div>
+                </li>
+                <li>
+                  <span class="ci"><svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                  <div><small>Địa chỉ</small><a href="https://www.google.com/maps/search/?api=1&amp;query=X%C3%B3m+An+Kh%C3%A1nh%2C+Th%C3%B4n+V%C3%A2n+Ch%C3%A0ng%2C+X%C3%A3+Nam+Tr%E1%BB%B1c%2C+T%E1%BB%89nh+Ninh+B%C3%ACnh" target="_blank" rel="noreferrer">Xóm An Khánh, Thôn Vân Chàng, Xã Nam Trực, Ninh Bình</a></div>
+                </li>
+              </ul>
+            </div>
+
+            <form class="contact-form" data-form novalidate>
+              <div class="field">
+                <input id="f-name" name="name" type="text" placeholder=" " autocomplete="name" required>
+                <label for="f-name">Họ và tên *</label>
+                <span class="field-error">Vui lòng nhập họ tên</span>
+              </div>
+              <div class="field">
+                <input id="f-phone" name="phone" type="tel" placeholder=" " autocomplete="tel" required pattern="^(0|\+84)[0-9\s.]{8,12}$">
+                <label for="f-phone">Số điện thoại *</label>
+                <span class="field-error">Số điện thoại chưa hợp lệ</span>
+              </div>
+              <fieldset class="field-chips">
+                <legend>Bạn quan tâm đến</legend>
+                <label><input type="checkbox" name="need" value="website"><span>Website</span></label>
+                <label><input type="checkbox" name="need" value="software"><span>Phần mềm</span></label>
+                <label><input type="checkbox" name="need" value="app"><span>App mobile</span></label>
+                <label><input type="checkbox" name="need" value="uiux"><span>UI/UX</span></label>
+                <label><input type="checkbox" name="need" value="consulting"><span>Tư vấn</span></label>
+              </fieldset>
+              <div class="field">
+                <textarea id="f-msg" name="message" rows="3" placeholder=" "></textarea>
+                <label for="f-msg">Mô tả ngắn về dự án</label>
+              </div>
+              <button class="btn btn-gold btn-lg btn-block magnetic" type="submit">
+                <span data-submit-label>Gửi yêu cầu tư vấn</span><i class="btn-arrow" aria-hidden="true">→</i>
+              </button>
+              <p class="form-note">Thông tin của bạn được bảo mật tuyệt đối.</p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand">
+          <a class="brand brand-footer" href="#top" aria-label="Hoàng Hà Digital — Về đầu trang">
+            <span class="brand-tile"><img src="/brand/logo-mark.png" alt="" width="153" height="172" loading="lazy"></span>
+            <span class="brand-text"><strong>HOÀNG HÀ</strong><small>DIGITAL</small></span>
+          </a>
+          <p>Công ty TNHH Giải pháp số Hoàng Hà — kiến tạo website, phần mềm và trải nghiệm số cho doanh nghiệp Việt.</p>
+          <div class="socials">
+            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg></a>
+            <a href="#" aria-label="Zalo"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.1-4.6A9 9 0 1 1 21 12Z"/></svg></a>
+            <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6ZM2 9h4v12H2Z"/><circle cx="4" cy="4" r="2"/></svg></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Dịch vụ</h4>
+          <a href="#services">Thiết kế website</a>
+          <a href="#services">Phần mềm theo yêu cầu</a>
+          <a href="#services">Ứng dụng di động</a>
+          <a href="#services">UI/UX Design</a>
+          <a href="#services">Cloud &amp; DevOps</a>
+        </div>
+        <div class="footer-col">
+          <h4>Công ty</h4>
+          <a href="#about">Về chúng tôi</a>
+          <a href="#why">Lợi thế</a>
+          <a href="#process">Quy trình</a>
+          <a href="#contact">Liên hệ</a>
+        </div>
+        <div class="footer-col">
+          <h4>Liên hệ</h4>
+          <a href="tel:+84943447206">0943 447 206</a>
+          <p>Xóm An Khánh, Thôn Vân Chàng, Xã Nam Trực, Tỉnh Ninh Bình</p>
+          <p>MST: 0601330926</p>
+        </div>
+      </div>
+      <div class="footer-mega container" aria-hidden="true"><span data-mega>HOÀNG HÀ</span></div>
+      <div class="container footer-bottom">
+        <p>© <span data-year></span> Hoang Ha Digital Solutions Co., Ltd. All rights reserved.</p>
+        <a class="to-top" href="#top">Về đầu trang <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
+
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+  </body>
+</html>
