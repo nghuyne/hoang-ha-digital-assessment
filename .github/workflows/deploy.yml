@@ -1,8 +1,14 @@
 name: Deploy FE to GitHub Pages
 
+# Mỗi thay đổi ở bài FE phải qua lint, test E2E (Chromium + Firefox) và ngân sách Lighthouse.
+# Chỉ khi cả ba đạt, bản build mới được deploy lên GitHub Pages (push lên main).
 on:
   push:
     branches: [main]
+    paths:
+      - 'bai-test-fe-hoang-ha/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
     paths:
       - 'bai-test-fe-hoang-ha/**'
       - '.github/workflows/deploy.yml'
@@ -10,11 +16,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: fe-${{ github.ref }}
   cancel-in-progress: true
 
 defaults:
@@ -22,7 +26,35 @@ defaults:
     working-directory: bai-test-fe-hoang-ha
 
 jobs:
+  quality:
+    name: Lint, E2E, Lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: bai-test-fe-hoang-ha/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium firefox
+      - run: npm run test:e2e
+      - name: Lighthouse CI (ngân sách hiệu năng, a11y, SEO)
+        run: npx --yes @lhci/cli@0.14.x autorun
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            bai-test-fe-hoang-ha/playwright-report
+            bai-test-fe-hoang-ha/.lighthouseci
+          retention-days: 14
+
   build:
+    needs: quality
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +72,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
