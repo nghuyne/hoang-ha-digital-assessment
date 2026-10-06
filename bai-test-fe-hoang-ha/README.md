@@ -2,7 +2,7 @@
 
 Landing page doanh nghiệp responsive (Desktop 1440px · Mobile 390px), xây dựng theo yêu cầu trong `Bài Test Ứng Viên FE.pdf`.
 
-**🔗 Demo:** https://nghuyne.github.io/hoang-ha-digital-landing/
+**🔗 Demo:** https://nghuyne.github.io/hoang-ha-digital-assessment/
 
 ## Chạy dự án
 
