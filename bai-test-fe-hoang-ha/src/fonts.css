@@ -1,0 +1,51 @@
+/* Font tự host (Fontsource): không còn CSS chặn render từ Google Fonts, file font được băm tên
+   và cache lâu dài cùng bản build. Chỉ lấy các weight đang dùng và 3 bộ ký tự
+   cần cho tiếng Việt (latin, latin-ext, vietnamese); mỗi bộ có unicode-range riêng nên trình duyệt chỉ tải
+   phần chứa ký tự thực sự xuất hiện trên trang. Mã nguồn JetBrains Mono chỉ có ký tự latin. */
+@import '@fontsource/be-vietnam-pro/latin-400.css';
+@import '@fontsource/be-vietnam-pro/latin-ext-400.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-400.css';
+@import '@fontsource/be-vietnam-pro/latin-500.css';
+@import '@fontsource/be-vietnam-pro/latin-ext-500.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-500.css';
+@import '@fontsource/be-vietnam-pro/latin-600.css';
+@import '@fontsource/be-vietnam-pro/latin-ext-600.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-600.css';
+@import '@fontsource/be-vietnam-pro/latin-700.css';
+@import '@fontsource/be-vietnam-pro/latin-ext-700.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-700.css';
+@import '@fontsource/be-vietnam-pro/latin-800.css';
+@import '@fontsource/be-vietnam-pro/latin-ext-800.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-800.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+
+/* Font dự phòng đã chỉnh số đo cho khớp font chính (size-adjust, ascent/descent-override, tính từ
+   metric của capsize): khi font thật tải xong và thay vào, chữ gần như không đổi kích thước, nên tiêu đề
+   hero không còn làm nhảy layout (CLS). */
+@font-face {
+  font-family: "Be Vietnam Pro Fallback Arial";
+  src: local("Arial");
+  size-adjust: 110.3632%;
+  ascent-override: 90.6099%;
+  descent-override: 24.0116%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Be Vietnam Pro Fallback Roboto";
+  src: local("Roboto");
+  size-adjust: 110.6055%;
+  ascent-override: 90.4114%;
+  descent-override: 23.959%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback CourierNew";
+  src: local("Courier New");
+  size-adjust: 99.9837%;
+  ascent-override: 102.0166%;
+  descent-override: 30.0049%;
+  line-gap-override: 0%;
+}

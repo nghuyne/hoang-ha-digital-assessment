@@ -6,32 +6,62 @@
     <meta name="description" content="Hoàng Hà Digital — đối tác chuyển đổi số: thiết kế website, phát triển phần mềm, ứng dụng và hạ tầng cloud theo yêu cầu doanh nghiệp.">
     <meta name="theme-color" content="#0b1d42">
     <title>Hoàng Hà Digital — Giải pháp số cho doanh nghiệp</title>
-    <link rel="icon" type="image/png" href="/brand/logo-mark.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="canonical" href="https://nghuyne.github.io/hoang-ha-digital-assessment/">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+
+    <!-- Thẻ xem trước khi chia sẻ link (Facebook, Zalo, LinkedIn, X) -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="vi_VN">
+    <meta property="og:site_name" content="Hoàng Hà Digital">
+    <meta property="og:title" content="Hoàng Hà Digital — Giải pháp số cho doanh nghiệp">
+    <meta property="og:description" content="Thiết kế website, phần mềm quản trị, ứng dụng di động và hạ tầng cloud theo yêu cầu doanh nghiệp.">
+    <meta property="og:url" content="https://nghuyne.github.io/hoang-ha-digital-assessment/">
+    <meta property="og:image" content="https://nghuyne.github.io/hoang-ha-digital-assessment/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Hoàng Hà Digital — Kiến tạo giải pháp số giúp doanh nghiệp bứt phá">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Dữ liệu có cấu trúc: thông tin doanh nghiệp cho công cụ tìm kiếm -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Hoàng Hà Digital",
+        "legalName": "Công ty TNHH Giải pháp số Hoàng Hà",
+        "taxID": "0601330926",
+        "url": "https://nghuyne.github.io/hoang-ha-digital-assessment/",
+        "logo": "https://nghuyne.github.io/hoang-ha-digital-assessment/icon-512.png",
+        "telephone": "+84943447206",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Xóm An Khánh, Thôn Vân Chàng",
+          "addressLocality": "Xã Nam Trực",
+          "addressRegion": "Ninh Bình",
+          "addressCountry": "VN"
+        }
+      }
+    </script>
     <script>
-      document.documentElement.classList.add('js');
-      // Dự phòng: nếu JS chính lỗi, không để preloader che trang mãi
-      setTimeout(function () {
-        var p = document.querySelector('[data-preloader]');
-        if (p) { p.remove(); document.body.classList.remove('is-loading'); document.documentElement.classList.add('no-motion'); }
-      }, 8000);
+      // Chạy trước khi vẽ: gắn cờ JS và chọn giao diện sáng/tối ngay, tránh nháy sai màu ở khung hình đầu
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme = null;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.dataset.theme = theme;
+      })();
     </script>
     <script type="module" src="/src/main.js"></script>
   </head>
-  <body class="is-loading">
+  <body>
     <a class="skip-link" href="#main">Đi tới nội dung chính</a>
 
-    <!-- Preloader -->
-    <div class="preloader" data-preloader aria-hidden="true">
-      <div class="preloader-inner">
-        <img class="preloader-logo" src="/brand/logo-mark.png" alt="" width="153" height="172">
-        <div class="preloader-bar"><span data-preloader-bar></span></div>
-        <p class="preloader-count"><span data-preloader-count>0</span>%</p>
-      </div>
-      <div class="preloader-curtain"></div>
-    </div>
 
     <div class="scroll-progress" data-progress aria-hidden="true"></div>
 
@@ -39,7 +69,7 @@
     <header class="site-header" data-header>
       <div class="header-inner container">
         <a class="brand" href="#top" aria-label="Hoàng Hà Digital — Trang chủ">
-          <img src="/brand/logo-mark.png" alt="" width="153" height="172">
+          <picture><source type="image/avif" srcset="/brand/logo-mark-76.avif 76w, /brand/logo-mark-153.avif 153w" sizes="(max-width: 640px) 32px, 38px"><source type="image/webp" srcset="/brand/logo-mark-76.webp 76w, /brand/logo-mark-153.webp 153w" sizes="(max-width: 640px) 32px, 38px"><img src="/brand/logo-mark.png" alt="" width="153" height="172"></picture>
           <span class="brand-text"><strong>HOÀNG HÀ</strong><small>DIGITAL</small></span>
         </a>
         <nav class="nav" aria-label="Điều hướng chính" data-nav>
@@ -54,6 +84,13 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
             0943 447 206
           </a>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Chuyển sang giao diện tối">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <mask id="moon-mask"><rect x="-4" y="-4" width="32" height="32" fill="#fff"/><circle class="tt-moon" cx="24" cy="4" r="6" fill="#000"/></mask>
+              <circle class="tt-sun" cx="12" cy="12" r="5" mask="url(#moon-mask)"/>
+              <g class="tt-rays"><path d="M12 1.5v2M12 20.5v2M1.5 12h2M20.5 12h2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M4.6 19.4 6 18M18 6l1.4-1.4"/></g>
+            </svg>
+          </button>
           <a class="btn btn-primary btn-sm magnetic" href="#contact"><span>Liên hệ</span><i class="btn-arrow" aria-hidden="true">→</i></a>
           <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
             <span class="sr-only">Mở menu</span><span></span><span></span>
@@ -119,7 +156,7 @@
             <div class="orbit orbit-3"></div>
             <div class="hero-core" data-depth="0.4">
               <div class="core-glow"></div>
-              <img src="/brand/logo-mark.png" alt="" width="153" height="172">
+              <picture><source type="image/avif" srcset="/brand/logo-mark-76.avif 76w, /brand/logo-mark-153.avif 153w" sizes="(max-width: 640px) 64px, 96px"><source type="image/webp" srcset="/brand/logo-mark-76.webp 76w, /brand/logo-mark-153.webp 153w" sizes="(max-width: 640px) 64px, 96px"><img src="/brand/logo-mark.png" alt="" width="153" height="172"></picture>
             </div>
 
             <div class="float-card card-analytics" data-depth="0.9">
@@ -151,10 +188,10 @@
         </div>
 
         <div class="container hero-stats">
-          <div class="stat"><strong><span data-count="99.9" data-decimals="1">0</span>%</strong><span>Uptime hệ thống cam kết</span></div>
-          <div class="stat"><strong>&lt;<span data-count="2">0</span>s</strong><span>Thời gian tải trang mục tiêu</span></div>
-          <div class="stat"><strong><span data-count="24">0</span>/7</strong><span>Giám sát &amp; hỗ trợ kỹ thuật</span></div>
-          <div class="stat"><strong><span data-count="100">0</span>%</strong><span>Mã nguồn thuộc về khách hàng</span></div>
+          <div class="stat"><strong><span data-count="99.9" data-decimals="1">99.9</span>%</strong><span>Uptime hệ thống cam kết</span></div>
+          <div class="stat"><strong>&lt;<span data-count="2">2</span>s</strong><span>Thời gian tải trang mục tiêu</span></div>
+          <div class="stat"><strong><span data-count="24">24</span>/7</strong><span>Giám sát &amp; hỗ trợ kỹ thuật</span></div>
+          <div class="stat"><strong><span data-count="100">100</span>%</strong><span>Mã nguồn thuộc về khách hàng</span></div>
         </div>
 
       </section>
@@ -212,7 +249,7 @@
             <div class="brand-story reveal tilt">
               <div class="story-visual">
                 <span class="story-ring"></span><span class="story-ring r2"></span>
-                <img src="/brand/logo-mark.png" alt="Biểu tượng Hoàng Hà Digital" width="153" height="172" loading="lazy">
+                <picture><source type="image/avif" srcset="/brand/logo-mark-76.avif 76w, /brand/logo-mark-153.avif 153w" sizes="110px"><source type="image/webp" srcset="/brand/logo-mark-76.webp 76w, /brand/logo-mark-153.webp 153w" sizes="110px"><img src="/brand/logo-mark.png" alt="Biểu tượng Hoàng Hà Digital" width="153" height="172" loading="lazy"></picture>
               </div>
               <div class="story-copy">
                 <p class="mono-label">Ý nghĩa biểu tượng</p>
@@ -514,7 +551,7 @@
       <div class="container footer-grid">
         <div class="footer-brand">
           <a class="brand brand-footer" href="#top" aria-label="Hoàng Hà Digital — Về đầu trang">
-            <span class="brand-tile"><img src="/brand/logo-mark.png" alt="" width="153" height="172" loading="lazy"></span>
+            <span class="brand-tile"><picture><source type="image/avif" srcset="/brand/logo-mark-76.avif 76w, /brand/logo-mark-153.avif 153w" sizes="34px"><source type="image/webp" srcset="/brand/logo-mark-76.webp 76w, /brand/logo-mark-153.webp 153w" sizes="34px"><img src="/brand/logo-mark.png" alt="" width="153" height="172" loading="lazy"></picture></span>
             <span class="brand-text"><strong>HOÀNG HÀ</strong><small>DIGITAL</small></span>
           </a>
           <p>Công ty TNHH Giải pháp số Hoàng Hà — kiến tạo website, phần mềm và trải nghiệm số cho doanh nghiệp Việt.</p>
@@ -525,7 +562,7 @@
           </div>
         </div>
         <div class="footer-col">
-          <h4>Dịch vụ</h4>
+          <h2 class="footer-title">Dịch vụ</h2>
           <a href="#services">Thiết kế website</a>
           <a href="#services">Phần mềm theo yêu cầu</a>
           <a href="#services">Ứng dụng di động</a>
@@ -533,14 +570,14 @@
           <a href="#services">Cloud &amp; DevOps</a>
         </div>
         <div class="footer-col">
-          <h4>Công ty</h4>
+          <h2 class="footer-title">Công ty</h2>
           <a href="#about">Về chúng tôi</a>
           <a href="#why">Lợi thế</a>
           <a href="#process">Quy trình</a>
           <a href="#contact">Liên hệ</a>
         </div>
         <div class="footer-col">
-          <h4>Liên hệ</h4>
+          <h2 class="footer-title">Liên hệ</h2>
           <a href="tel:+84943447206">0943 447 206</a>
           <p>Xóm An Khánh, Thôn Vân Chàng, Xã Nam Trực, Tỉnh Ninh Bình</p>
           <p>MST: 0601330926</p>

@@ -1,13 +1,11 @@
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-const $ = (s, root = document) => root.querySelector(s);
-const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+import { $, $$ } from './lib/env.js';
 
 export function initInteractions({ lenis, reduceMotion, finePointer }) {
   const closeMenu = initMobileMenu(lenis, reduceMotion);
   initScrollSpy();
   initForm();
+  if (!reduceMotion) initRipple();
   if (!reduceMotion && finePointer) {
     initMagnetic();
     initTilt();
@@ -76,18 +74,21 @@ function initScrollSpy() {
     movePill(link);
   };
 
+  // Vạch giữa màn hình: section nào cắt qua vạch này là section đang xem. IntersectionObserver không lưu
+  // sẵn toạ độ như ScrollTrigger, nên vẫn đúng khi layout đổi (font tải xong, ảnh, cuộn ngang bằng CSS).
+  const bySection = new Map();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const link = bySection.get(entry.target);
+      if (entry.isIntersecting) setActive(link);
+      else if (active === link) setActive(null);
+    });
+  }, { rootMargin: '-50% 0px -50% 0px' });
   links.forEach((link) => {
     const section = $(link.getAttribute('href'));
     if (!section) return;
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top 50%',
-      end: 'bottom 50%',
-      onToggle: (self) => {
-        if (self.isActive) setActive(link);
-        else if (active === link) setActive(null);
-      },
-    });
+    bySection.set(section, link);
+    io.observe(section);
     link.addEventListener('mouseenter', () => movePill(link));
   });
   nav.addEventListener('mouseleave', () => movePill(active));
@@ -151,6 +152,21 @@ function initHeroParallax() {
     layers.forEach((l) => { l.x(nx * 40 * l.depth); l.y(ny * 40 * l.depth); });
   });
   hero.addEventListener('pointerleave', () => layers.forEach((l) => { l.x(0); l.y(0); }));
+}
+
+/* Gợn sáng lan ra từ đúng điểm bấm trên nút */
+function initRipple() {
+  document.addEventListener('pointerdown', (e) => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.setProperty('--rx', `${e.clientX - r.left}px`);
+    ripple.style.setProperty('--ry', `${e.clientY - r.top}px`);
+    btn.append(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
 }
 
 /* Form liên hệ: kiểm tra dữ liệu phía client + toast */

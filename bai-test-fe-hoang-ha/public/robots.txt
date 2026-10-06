@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nghuyne.github.io/hoang-ha-digital-assessment/sitemap.xml
