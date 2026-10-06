@@ -81,7 +81,6 @@ Tính trước để chọn kiến trúc, không chọn theo cảm tính.
 
 ### 3.1 Phễu: mỗi tầng chặn bớt cho tầng sau
 
-<!-- Sơ đồ kiến trúc (tự vẽ): đặt ảnh tại diagrams/architecture.png -->
 ![Sơ đồ kiến trúc](diagrams/architecture.png)
 
 | Tầng | Thành phần | Lượng request qua | Vai trò |
@@ -127,7 +126,6 @@ Client tự tính vị trí của mình bằng `ahead = rank − cursor + 1`. `r
 
 ### 4.2 Luồng xử lý từ request đến trừ tồn kho
 
-<!-- Sơ đồ chuỗi (tự vẽ): đặt ảnh tại diagrams/purchase-sequence.png -->
 ![Sơ đồ chuỗi luồng mua](diagrams/purchase-sequence.png)
 
 **Chuẩn bị (trước giờ G)**
@@ -240,7 +238,6 @@ INCRBY fs:{ev}:stock :n                  -- SAU commit
 - **Cuộc đua mili-giây là luật chơi bot chắc thắng.** Với FIFO, bot thắng 100/100 trong mô phỏng: chúng canh đúng giờ G và phản ứng trong vài ms.
 - Vì vậy chiến lược có 4 phần: **(A) xóa lợi thế tốc độ, (B) làm mỗi danh tính tốn tiền, (C) lọc bot lười, (D) hậu kiểm.** Công bằng được định nghĩa là: *mỗi người đủ điều kiện có cơ hội như nhau, bất kể thiết bị hay tốc độ mạng.*
 
-<!-- Sơ đồ chuỗi (tự vẽ): đặt ảnh tại diagrams/waiting-room-sequence.png -->
 ![Sơ đồ chuỗi phòng chờ công bằng](diagrams/waiting-room-sequence.png)
 
 ### 5.2 (A) Phòng chờ bốc thăm
