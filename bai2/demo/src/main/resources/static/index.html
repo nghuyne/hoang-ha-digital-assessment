@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flash Sale Demo</title>
+  <style>
+    :root {
+      --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1f; --muted: #6b6b70; --line: #e4e2dc;
+      --accent: #d9480f; --accent-ink: #ffffff; --ok: #2b8a3e; --warn: #b7791f; --bad: #c92a2a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #141416; --card: #1d1d20; --ink: #ececef; --muted: #9a9aa2; --line: #2c2c31;
+        --accent: #ff7a3d; --accent-ink: #141416; --ok: #51cf66; --warn: #fcc419; --bad: #ff6b6b;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink);
+           font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 560px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    .sub { color: var(--muted); margin: 0 0 24px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+    .label { color: var(--muted); font-size: 13px; }
+    .countdown { font: 600 40px/1.1 ui-monospace, "SF Mono", Consolas, monospace; letter-spacing: 1px; margin: 6px 0 2px; }
+    .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 10px; }
+    .bar > div { height: 100%; background: var(--accent); width: 100%; transition: width .3s; }
+    button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 12px 18px; cursor: pointer;
+             background: var(--accent); color: var(--accent-ink); width: 100%; }
+    button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); width: auto; padding: 6px 12px; font-weight: 500; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .status { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--bg); min-height: 46px; }
+    .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+    details summary { cursor: pointer; color: var(--muted); }
+    a { color: var(--accent); }
+    #payBtn { margin-top: 10px; }
+    .admin { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .admin label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+    input, select { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+    .admin button { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Flash Sale: 100 chiếc</h1>
+  <p class="sub">Demo phòng chờ công bằng + chống over-selling · <a href="admin.html">Dashboard vận hành</a></p>
+
+  <section class="card">
+    <div class="row">
+      <span class="label" id="phaseLabel">Mở bán sau</span>
+      <span class="label">Chế độ: <b id="fairness">-</b></span>
+    </div>
+    <div class="countdown" id="countdown">--:--</div>
+    <div class="row">
+      <span class="label">Còn lại</span>
+      <span><b id="remaining">-</b> / <span id="total">-</span></span>
+    </div>
+    <div class="bar"><div id="bar"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="row" style="margin-bottom:12px">
+      <span class="label">Tài khoản: <code id="userId"></code></span>
+      <button class="secondary" id="switchUser" type="button">Đổi tài khoản</button>
+    </div>
+    <button id="joinBtn" type="button" disabled>Vào phòng chờ</button>
+    <button id="buyBtn" type="button" hidden>Mua ngay</button>
+    <button id="payBtn" type="button" hidden>Thanh toán (giả lập cổng thanh toán)</button>
+    <div class="status" id="status">Đang tải…</div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Bảng điều khiển demo (reset sự kiện)</summary>
+      <form class="admin" id="adminForm">
+        <label>Mở bán sau (giây)<input name="startInSeconds" type="number" value="30" min="-1"></label>
+        <label>Chế độ
+          <select name="fairness"><option>RANDOM</option><option>FIFO</option></select>
+        </label>
+        <label>Số lượng<input name="totalStock" type="number" value="100" min="1"></label>
+        <label>Độ khó PoW (bit)<input name="powBits" type="number" value="16" min="0" max="24"></label>
+        <label>Giữ lượt mua (giây)<input name="leaseSeconds" type="number" value="60" min="1"></label>
+        <label>Hạn thanh toán (giây)<input name="paymentSeconds" type="number" value="600" min="1"></label>
+        <label style="grid-column:1/-1">Admin key<input name="adminKey" value="demo-admin-key"></label>
+        <button type="submit">Reset sự kiện</button>
+      </form>
+    </details>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

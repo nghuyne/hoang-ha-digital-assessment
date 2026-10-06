@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flash Sale Ops</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f5f2; --surface: #fcfcfb; --line: #e4e2dc; --grid: #ecebe6;
+      --ink: #0b0b0b; --ink-2: #52514e; --muted: #7a7974;
+      --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --other: #a9a8a2;
+      --good: #0ca30c; --critical: #d03b3b; --accent: #2a78d6;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:where(:not([data-theme="light"])) {
+        color-scheme: dark;
+        --bg: #121211; --surface: #1a1a19; --line: #2c2c2a; --grid: #262624;
+        --ink: #ffffff; --ink-2: #c3c2b7; --muted: #8f8e88;
+        --s1: #3987e5; --s2: #d95926; --s3: #199e70; --other: #5c5b57; --accent: #3987e5;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #121211; --surface: #1a1a19; --line: #2c2c2a; --grid: #262624;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #8f8e88;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --other: #5c5b57; --accent: #3987e5;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink);
+           font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 1120px; margin: 0 auto; padding: 24px 16px 48px; }
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    h2 { font-size: 14px; margin: 0 0 12px; color: var(--ink-2); font-weight: 600; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .meta input { font: inherit; width: 150px; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line);
+                  background: var(--surface); color: var(--ink); }
+    a { color: var(--accent); }
+    .grid { display: grid; gap: 12px; }
+    .kpis { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 12px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+    .kpi .label { color: var(--ink-2); font-size: 12px; }
+    .kpi .value { font: 600 28px/1.2 ui-monospace, "SF Mono", Consolas, monospace; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .kpi .note { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .two { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+    .status { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+    .status .dot { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center;
+                   color: #fff; font-size: 12px; line-height: 1; }
+    .status.good .dot { background: var(--good); }
+    .status.bad .dot { background: var(--critical); }
+    .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .checks .why { color: var(--muted); font-size: 12px; font-weight: 400; margin-left: 26px; }
+    /* Thanh ngang: một chuỗi, độ lớn -> một màu, nhãn chữ dùng màu chữ */
+    .bars { display: grid; gap: 6px; }
+    .bar-row { display: grid; grid-template-columns: 150px 1fr 56px; gap: 8px; align-items: center; position: relative; }
+    .bar-row .name { color: var(--ink-2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-row .track { height: 14px; border-bottom: 1px solid var(--grid); }
+    .bar-row .fill { height: 12px; background: var(--s1); border-radius: 0 4px 4px 0; min-width: 2px; transition: width .3s; }
+    .bar-row .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-size: 12px; }
+    .bar-row:hover .fill { filter: brightness(1.1); }
+    /* Thanh xếp chồng 100%: ai đang giữ suất */
+    .stack { display: flex; height: 28px; gap: 2px; border-radius: 4px; overflow: hidden; background: var(--grid); }
+    .stack div { height: 100%; transition: flex-basis .3s; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+                           background: var(--c); margin-right: 6px; vertical-align: -1px; }
+    .legend b { color: var(--ink); font-variant-numeric: tabular-nums; }
+    .empty { color: var(--muted); font-size: 12px; }
+    #tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px;
+           padding: 4px 8px; border-radius: 6px; opacity: 0; transition: opacity .1s; z-index: 10; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    td, th { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--grid); }
+    th { color: var(--ink-2); font-weight: 600; }
+    td.n { text-align: right; font-variant-numeric: tabular-nums; }
+    details summary { cursor: pointer; color: var(--ink-2); font-size: 12px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Flash Sale · Dashboard vận hành</h1>
+      <div class="meta">Sự kiện <b id="eventId">-</b> · <span id="phase">-</span> · chế độ <b id="mode">-</b> ·
+        <a href="/">Trang mua</a> · <a href="/actuator/prometheus">/actuator/prometheus</a></div>
+    </div>
+    <label class="meta">Admin key <input id="key" value="demo-admin-key" autocomplete="off"></label>
+  </header>
+
+  <section class="grid kpis" aria-label="Chỉ số chính">
+    <div class="card kpi"><div class="label">Đã bán (DB)</div><div class="value" id="k-sold">-</div><div class="note" id="k-sold-note">-</div></div>
+    <div class="card kpi"><div class="label">Đã thanh toán</div><div class="value" id="k-paid">-</div><div class="note">đơn PAID</div></div>
+    <div class="card kpi"><div class="label">Chờ thanh toán</div><div class="value" id="k-reserved">-</div><div class="note">đơn RESERVED</div></div>
+    <div class="card kpi"><div class="label">Hết hạn, trả suất</div><div class="value" id="k-expired">-</div><div class="note">về người kế tiếp</div></div>
+    <div class="card kpi"><div class="label">Trong phòng chờ</div><div class="value" id="k-queue">-</div><div class="note"><span id="k-leases">-</span> lượt đang mở</div></div>
+    <div class="card kpi"><div class="label">Tồn kho Redis</div><div class="value" id="k-redis">-</div><div class="note">cổng quyết định</div></div>
+  </section>
+
+  <section class="grid two">
+    <div class="card">
+      <h2>Bất biến của hệ thống</h2>
+      <ul class="checks" id="checks"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Ai đang giữ suất (RESERVED + PAID)</h2>
+      <div class="stack" id="stack" role="img" aria-label="Tỉ lệ người giữ suất theo nhóm"></div>
+      <div class="legend" id="legend"></div>
+      <p class="empty" id="stack-note">Nhóm tính theo tiền tố userId của script mô phỏng (human-, botpro-, botnaive-).</p>
+    </div>
+
+    <div class="card">
+      <h2>Kết quả request "Mua ngay"</h2>
+      <div class="bars" id="outcomes"></div>
+      <details><summary>Xem dạng bảng</summary><table id="outcomes-table"></table></details>
+    </div>
+
+    <div class="card">
+      <h2>Hàng đợi ghi DB và rate limit</h2>
+      <div class="bars" id="pipeline"></div>
+    </div>
+  </section>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => (n == null ? '-' : Number(n).toLocaleString('vi-VN'));
+try { const k = localStorage.getItem('fs-admin-key'); if (k) $('key').value = k; } catch (_) { }
+$('key').addEventListener('change', () => { try { localStorage.setItem('fs-admin-key', $('key').value); } catch (_) { } });
+
+const tip = $('tip');
+function showTip(e, text) { tip.textContent = text; tip.style.left = (e.clientX + 12) + 'px'; tip.style.top = (e.clientY + 12) + 'px'; tip.style.opacity = 1; }
+function hideTip() { tip.style.opacity = 0; }
+
+// Thanh ngang, một chuỗi: xếp giảm dần, nhãn tên bên trái và số bên phải (không chỉ dựa vào màu)
+function bars(el, entries, emptyText) {
+  el.innerHTML = '';
+  if (!entries.length) { el.innerHTML = '<p class="empty">' + emptyText + '</p>'; return; }
+  const max = Math.max(...entries.map(([, v]) => v), 1);
+  for (const [name, v] of entries) {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = '<span class="name"></span><div class="track"><div class="fill"></div></div><span class="num"></span>';
+    row.querySelector('.name').textContent = name;
+    row.querySelector('.fill').style.width = (100 * v / max) + '%';
+    row.querySelector('.num').textContent = fmt(v);
+    row.addEventListener('mousemove', (e) => showTip(e, name + ': ' + fmt(v)));
+    row.addEventListener('mouseleave', hideTip);
+    el.appendChild(row);
+  }
+}
+
+const GROUPS = [
+  ['Người thật', (u) => u.startsWith('human-') || u.startsWith('web-'), '--s1'],
+  ['Bot tinh vi', (u) => u.startsWith('botpro-'), '--s2'],
+  ['Bot lười', (u) => u.startsWith('botnaive-'), '--s3'],
+  ['Khác', () => true, '--other'],
+];
+
+function renderHolders(holders, total) {
+  const counts = GROUPS.map(() => 0);
+  for (const h of holders) counts[GROUPS.findIndex(([, test]) => test(h.user_id))]++;
+  const stack = $('stack');
+  stack.innerHTML = '';
+  const free = Math.max(0, total - holders.length);
+  GROUPS.forEach(([name, , color], i) => {
+    if (!counts[i]) return;
+    const seg = document.createElement('div');
+    seg.style.flex = '0 0 ' + (100 * counts[i] / Math.max(total, 1)) + '%';
+    seg.style.background = 'var(' + color + ')';
+    seg.addEventListener('mousemove', (e) => showTip(e, name + ': ' + counts[i] + ' / ' + total));
+    seg.addEventListener('mouseleave', hideTip);
+    stack.appendChild(seg);
+  });
+  $('legend').innerHTML = GROUPS.map(([name, , color], i) =>
+    counts[i] || i < 3 ? '<span style="--c:var(' + color + ')">' + name + ' <b>' + counts[i] + '</b></span>' : '').join('')
+    + '<span style="--c:var(--grid)">Chưa ai giữ <b>' + free + '</b></span>';
+}
+
+function check(ok, title, why) {
+  return '<li><div class="status ' + (ok ? 'good' : 'bad') + '"><span class="dot" aria-hidden="true">'
+    + (ok ? '✓' : '!') + '</span>' + (ok ? 'Đạt' : 'Vi phạm') + ': ' + title + '</div><div class="why">' + why + '</div></li>';
+}
+
+async function refresh() {
+  const key = $('key').value;
+  const [ev, st] = await Promise.all([
+    fetch('/api/event').then((r) => r.json()).catch(() => null),
+    fetch('/api/admin/stats', { headers: { 'X-Admin-Key': key } }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  ]);
+  if (ev) {
+    $('eventId').textContent = ev.eventId;
+    $('mode').textContent = ev.fairness;
+    const toStart = ev.startAt - ev.serverTime;
+    $('phase').textContent = toStart > 0 ? 'mở bán sau ' + Math.ceil(toStart / 1000) + ' giây' : 'đang mở bán';
+  }
+  if (!st) { $('checks').innerHTML = '<li class="empty">Không đọc được /api/admin/stats (sai admin key?)</li>'; return; }
+
+  $('k-sold').textContent = fmt(st.sold) + ' / ' + fmt(st.total);
+  $('k-sold-note').textContent = 'còn ' + fmt(st.total - st.sold) + ' suất trong DB';
+  $('k-paid').textContent = fmt(st.paid);
+  $('k-reserved').textContent = fmt(st.reserved);
+  $('k-expired').textContent = fmt(st.expired);
+  $('k-queue').textContent = fmt(st.queueSize);
+  $('k-leases').textContent = fmt(st.activeLeases);
+  $('k-redis').textContent = fmt(st.redisRemaining);
+
+  const holding = st.reserved + st.paid;
+  $('checks').innerHTML =
+    check(st.sold <= st.total, 'không bán vượt (sold ≤ total)', 'DB: ' + st.sold + ' ≤ ' + st.total + ', bảo đảm bởi UPDATE có điều kiện + CHECK constraint')
+    + check(holding === st.sold, 'số đơn đang giữ suất khớp tồn kho DB', 'RESERVED + PAID = ' + holding + ', inventory.sold = ' + st.sold)
+    + check(st.activeLeases <= Math.max(0, st.redisRemaining), 'lượt đang mở ≤ tồn kho Redis', st.activeLeases + ' ≤ ' + st.redisRemaining + ': không mời quá số suất còn lại')
+    + check(st.rejected === 0, 'Redis và DB không lệch', st.rejected + ' đơn bị DB từ chối (Redis cho qua nhưng DB hết hàng)')
+    + check(st.deadLetters === 0, 'không có đơn trong dead-letter', st.deadLetters + ' message cần người kiểm tra');
+
+  renderHolders(st.holders || [], st.total);
+
+  const outcomes = Object.entries(st.purchaseOutcomes || {}).sort((a, b) => b[1] - a[1]);
+  bars($('outcomes'), outcomes, 'Chưa có request mua nào.');
+  $('outcomes-table').innerHTML = '<tr><th>Kết quả</th><th>Số request</th></tr>'
+    + outcomes.map(([k, v]) => '<tr><td>' + k + '</td><td class="n">' + fmt(v) + '</td></tr>').join('');
+
+  const rl = Object.entries(st.rateLimited || {}).map(([g, v]) => ['429 · ' + g, v]);
+  bars($('pipeline'), [
+    ['Stream: tổng message', st.streamLength || 0],
+    ['Stream: chưa ACK', st.streamPending || 0],
+    ['Dead-letter', st.deadLetters || 0],
+    ...rl,
+  ].sort((a, b) => b[1] - a[1]), 'Chưa có dữ liệu.');
+}
+
+refresh();
+setInterval(refresh, 1000);
+</script>
+</body>
+</html>
