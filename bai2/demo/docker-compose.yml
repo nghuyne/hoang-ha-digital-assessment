@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    # AOF fsync mỗi giây: mất tối đa ~1s dữ liệu khi sập. DB vẫn là chốt chặn cuối nên chấp nhận được.
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    # Cổng host khác mặc định để không đụng Redis/Memurai có sẵn trên máy
+    ports:
+      - "127.0.0.1:16379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: flashsale
+      POSTGRES_USER: flashsale
+      POSTGRES_PASSWORD: flashsale
+    ports:
+      - "127.0.0.1:15432:5432"

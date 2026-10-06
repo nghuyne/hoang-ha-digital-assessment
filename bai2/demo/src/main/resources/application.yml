@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: flashsale-demo
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:127.0.0.1}:${DB_PORT:15432}/flashsale
+    username: flashsale
+    password: flashsale
+    hikari:
+      # Chỉ worker và job hết hạn ghi DB, nên pool nhỏ là đủ: 100.000 request KHÔNG chạm DB
+      maximum-pool-size: 10
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:16379}
+  sql:
+    init:
+      mode: always
+
+server:
+  tomcat:
+    threads:
+      max: 400
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+
+flashsale:
+  event-id: iphone-drop
+  total-stock: 100
+  # Demo: sự kiện bắt đầu sau khi app khởi động N giây (đổi lại được qua POST /api/admin/reset)
+  start-delay-seconds: 120
+  fairness: RANDOM            # RANDOM: xáo thứ tự nhóm vào trước giờ G | FIFO: ai nhanh hơn thắng (để so sánh)
+  pre-queue-window-seconds: 600
+  # Đến lượt thì được giữ 1 suất trong N giây để bấm "Mua ngay"; quá hạn thì suất chuyển cho người kế tiếp
+  lease-seconds: 60
+  # Giữ suất thành công thì có N giây để thanh toán; quá hạn thì đơn EXPIRED, suất về người kế tiếp trong hàng
+  payment-window-seconds: 600
+  admission-tick-ms: 100      # nhịp cấp lượt (đường ghi của phòng chờ)
+  expiry-sweep-ms: 1000       # nhịp quét đơn quá hạn thanh toán
+  token-ttl-seconds: 120
+  min-reaction-ms: 300
+  pow-difficulty-bits: 16
+  rate-limit-per-second: 5    # mỗi user, mỗi nhóm endpoint. Người thật hỏi trạng thái 1 lần/giây
+  worker-name: ${HOSTNAME:${COMPUTERNAME:worker-1}}   # cố định qua các lần khởi động để nhận lại message dở dang
+  worker-reclaim-idle-ms: 30000   # message chưa ACK quá lâu (worker khác đã chết) thì nhận về xử lý
+  worker-max-deliveries: 5        # quá số lần thử thì chuyển dead-letter, không chặn hàng đợi
+  hmac-secret: demo-secret-change-me-in-production-0123456789
+  admin-key: demo-admin-key
